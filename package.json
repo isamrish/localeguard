@@ -1,0 +1,24 @@
+{
+  "name": "localeguard-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open-source localization quality gate for React and TypeScript projects.",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "packages/core",
+    "packages/cli"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean",
+    "test": "npm run build && node --test \"packages/core/dist/test/*.test.js\" \"packages/cli/dist/test/*.test.js\"",
+    "check:example": "node packages/cli/dist/src/index.js check --config examples/react-i18next-app/localeguard.config.json"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}

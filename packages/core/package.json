@@ -1,0 +1,21 @@
+{
+  "name": "@localeguard/core",
+  "version": "0.1.0",
+  "description": "Core localization checks for LocaleGuard: locale parsing, key comparison, and interpolation validation.",
+  "license": "Apache-2.0",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist/src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "localization",
+    "i18n",
+    "react-i18next",
+    "linter",
+    "translations"
+  ]
+}

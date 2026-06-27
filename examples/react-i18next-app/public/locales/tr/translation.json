@@ -1,0 +1,11 @@
+{
+  "app": {
+    "title": "Küme Yöneticisi"
+  },
+  "actions": {
+    "create": "Küme Oluştur"
+  },
+  "welcome": "Tekrar hoş geldiniz, {{kullanici}}",
+  "items": "{{count}} öğe seçildi",
+  "legacy": "eski kayıt"
+}

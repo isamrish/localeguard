@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "Cluster Manager",
+    "subtitle": "Manage your clusters in one place"
+  },
+  "actions": {
+    "create": "Create Cluster",
+    "delete": "Delete"
+  },
+  "welcome": "Welcome back, {{userName}}",
+  "items": "{{count}} items selected"
+}

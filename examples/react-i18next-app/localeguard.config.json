@@ -1,0 +1,10 @@
+{
+  "sourceLocale": "en",
+  "locales": ["tr"],
+  "localesPath": "public/locales",
+  "include": ["src/**/*.{ts,tsx}"],
+  "translationFunctions": ["t", "i18n.t"],
+  "translationComponents": ["Trans"],
+  "ignore": ["**/*.test.tsx", "**/*.stories.tsx"],
+  "blockOn": ["missing-key", "placeholder-mismatch", "invalid-json", "duplicate-key"]
+}
