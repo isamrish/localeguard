@@ -8,7 +8,7 @@ development and the expectations for contributions.
 LocaleGuard is an npm-workspaces monorepo. You need **Node.js 18+**.
 
 ```bash
-git clone https://github.com/localeguard/localeguard.git
+git clone https://github.com/isamrish/localeguard.git
 cd localeguard
 npm install
 npm run build      # tsc -b across all packages
