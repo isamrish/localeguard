@@ -1,15 +1,17 @@
 /**
  * Run the full locale-parity check: missing/extra/duplicate keys, invalid
  * JSON, and interpolation mismatches across every configured locale.
+ *
+ * Source-code checks (hardcoded text) live in `@localeguard/react-analyzer`
+ * and are composed with these results by the CLI. The helpers here
+ * (`summarizeIssues`, `sortIssues`) operate on any issue list so a combined
+ * report can be produced.
  */
 
 import { compareKeys } from "./key-comparator/compare";
 import { loadLocale } from "./locale-parser/load";
 import { comparePlaceholders } from "./placeholder-validator/placeholder";
-import {
-  DEFAULT_BLOCK_ON,
-  SEVERITY_BY_TYPE,
-} from "./types";
+import { DEFAULT_BLOCK_ON, ISSUE_TYPES, SEVERITY_BY_TYPE } from "./types";
 import type {
   CheckResult,
   CheckStats,
@@ -31,7 +33,6 @@ export interface RunCheckOptions {
 }
 
 export function runCheck(config: LocaleGuardConfig, opts: RunCheckOptions): CheckResult {
-  const blockOn = config.blockOn ?? DEFAULT_BLOCK_ON;
   const issues: Issue[] = [];
   const missingLocales: string[] = [];
 
@@ -45,11 +46,8 @@ export function runCheck(config: LocaleGuardConfig, opts: RunCheckOptions): Chec
   }
   issues.push(...source.issues);
 
-  const byLocale: CheckStats["byLocale"] = {};
-
   for (const locale of config.locales) {
     if (locale === config.sourceLocale) continue;
-    byLocale[locale] = { missing: 0, extra: 0, placeholder: 0 };
 
     const target = loadLocale(locale, loadOpts);
     if (!target.found) {
@@ -70,7 +68,6 @@ export function runCheck(config: LocaleGuardConfig, opts: RunCheckOptions): Chec
 
     for (const key of diff.missing) {
       const ref = source.entries.get(key)!;
-      byLocale[locale].missing++;
       issues.push({
         type: "missing-key",
         severity: SEVERITY_BY_TYPE["missing-key"],
@@ -85,7 +82,6 @@ export function runCheck(config: LocaleGuardConfig, opts: RunCheckOptions): Chec
 
     for (const key of diff.extra) {
       const ref = target.entries.get(key)!;
-      byLocale[locale].extra++;
       issues.push({
         type: "extra-key",
         severity: SEVERITY_BY_TYPE["extra-key"],
@@ -103,7 +99,6 @@ export function runCheck(config: LocaleGuardConfig, opts: RunCheckOptions): Chec
       const targetEntry = target.entries.get(key)!;
       const pdiff = comparePlaceholders(sourceEntry.value as never, targetEntry.value as never);
       if (pdiff) {
-        byLocale[locale].placeholder++;
         const parts: string[] = [];
         if (pdiff.missing.length) {
           parts.push(`missing ${pdiff.missing.map((v) => `{${v}}`).join(", ")}`);
@@ -126,42 +121,35 @@ export function runCheck(config: LocaleGuardConfig, opts: RunCheckOptions): Chec
   }
 
   sortIssues(issues);
-  const stats = buildStats(config, source.entries.size, issues, byLocale, blockOn);
+  const stats = summarizeIssues(issues, {
+    sourceLocale: config.sourceLocale,
+    sourceKeyCount: source.entries.size,
+    locales: config.locales,
+    blockOn: config.blockOn,
+  });
   return { issues, stats, missingLocales };
 }
 
-const TYPE_ORDER: IssueType[] = [
-  "invalid-json",
-  "duplicate-key",
-  "missing-key",
-  "extra-key",
-  "placeholder-mismatch",
-];
-
-function sortIssues(issues: Issue[]): void {
-  issues.sort((a, b) => {
-    const byLoc = (a.locale ?? "").localeCompare(b.locale ?? "");
-    if (byLoc) return byLoc;
-    const byType = TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type);
-    if (byType) return byType;
-    return (a.key ?? "").localeCompare(b.key ?? "");
-  });
+export interface SummarizeParams {
+  sourceLocale: string;
+  sourceKeyCount: number;
+  locales: string[];
+  blockOn?: IssueType[];
 }
 
-function buildStats(
-  config: LocaleGuardConfig,
-  sourceKeyCount: number,
-  issues: Issue[],
-  byLocale: CheckStats["byLocale"],
-  blockOn: IssueType[],
-): CheckStats {
-  const byType: Record<IssueType, number> = {
-    "invalid-json": 0,
-    "missing-key": 0,
-    "extra-key": 0,
-    "duplicate-key": 0,
-    "placeholder-mismatch": 0,
-  };
+/** Build aggregate statistics for an arbitrary set of issues. */
+export function summarizeIssues(issues: Issue[], params: SummarizeParams): CheckStats {
+  const blockOn = params.blockOn ?? DEFAULT_BLOCK_ON;
+
+  const byType = Object.fromEntries(ISSUE_TYPES.map((t) => [t, 0])) as Record<IssueType, number>;
+
+  const byLocale: CheckStats["byLocale"] = {};
+  for (const locale of params.locales) {
+    if (locale !== params.sourceLocale) {
+      byLocale[locale] = { missing: 0, extra: 0, placeholder: 0 };
+    }
+  }
+
   let errorCount = 0;
   let warningCount = 0;
   let failed = false;
@@ -171,15 +159,39 @@ function buildStats(
     if (issue.severity === "error") errorCount++;
     else warningCount++;
     if (blockOn.includes(issue.type)) failed = true;
+
+    if (issue.locale) {
+      const bucket = (byLocale[issue.locale] ??= { missing: 0, extra: 0, placeholder: 0 });
+      if (issue.type === "missing-key") bucket.missing++;
+      else if (issue.type === "extra-key") bucket.extra++;
+      else if (issue.type === "placeholder-mismatch") bucket.placeholder++;
+    }
   }
 
   return {
-    sourceLocale: config.sourceLocale,
-    sourceKeyCount,
+    sourceLocale: params.sourceLocale,
+    sourceKeyCount: params.sourceKeyCount,
     byType,
     byLocale,
     errorCount,
     warningCount,
     failed,
   };
+}
+
+const TYPE_ORDER: IssueType[] = ISSUE_TYPES;
+
+/** Sort issues by locale, then type, then key, then file/line. */
+export function sortIssues(issues: Issue[]): void {
+  issues.sort((a, b) => {
+    const byLoc = (a.locale ?? "").localeCompare(b.locale ?? "");
+    if (byLoc) return byLoc;
+    const byType = TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type);
+    if (byType) return byType;
+    const byFile = a.file.localeCompare(b.file);
+    if (byFile) return byFile;
+    const byLine = (a.line ?? 0) - (b.line ?? 0);
+    if (byLine) return byLine;
+    return (a.key ?? "").localeCompare(b.key ?? "");
+  });
 }

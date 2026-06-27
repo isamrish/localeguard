@@ -9,10 +9,10 @@ variables, duplicate keys, and invalid locale files — before they merge.
 [![CI](https://github.com/isamrish/localeguard/actions/workflows/ci.yml/badge.svg)](https://github.com/isamrish/localeguard/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
-> **Status: `0.1.0` — early release.** This version focuses on locale-file
-> parity and interpolation validation. Source-code analysis (hardcoded JSX text,
-> unlocalized `aria-label`/`alt`/`title`) and a dedicated GitHub Action are on the
-> [roadmap](#roadmap).
+> **Status: `0.1.0` — early release.** Includes locale-file parity,
+> interpolation validation, and source-code analysis for hardcoded JSX text and
+> unlocalized `aria-label`/`alt`/`title`/`placeholder`. A dedicated GitHub Action
+> and framework adapters are on the [roadmap](#roadmap).
 
 ---
 
@@ -49,6 +49,8 @@ fails CI automatically.
 
 ## What it checks (0.1.0)
 
+**Locale files**
+
 | Check | Description |
 | --- | --- |
 | `missing-key` | A key in the source locale is absent from a translated locale |
@@ -59,6 +61,19 @@ fails CI automatically.
 
 Both `{{double-brace}}` (i18next) and `{single-brace}` (ICU / react-intl)
 interpolation styles are recognized.
+
+**Source code** (React/TypeScript, via the TypeScript compiler API)
+
+| Check | Description |
+| --- | --- |
+| `hardcoded-string` | Literal user-facing JSX text, e.g. `<Button>Create Cluster</Button>` |
+| `hardcoded-attribute` | Literal `aria-label`, `title`, `alt`, or `placeholder` values |
+
+Source-code findings are **warnings by default** (non-blocking) to keep false
+positives from breaking builds — add them to `blockOn` to enforce. Values already
+wrapped in a translation call (`{t('...')}`), text inside `<Trans>`, empty `alt`,
+and non-text like `100%` are never flagged. Disable code analysis with
+`localeguard check --no-code`.
 
 ## Configuration
 
@@ -132,10 +147,10 @@ jobs:
 LocaleGuard follows an open-core model: the scanner, CLI, and CI integration are
 free and open source forever.
 
-- **Phase 1 (this release):** locale-file parity + interpolation validation.
-- **Phase 2:** source-code analysis — hardcoded JSX text and unlocalized
-  `aria-label`, `title`, `alt`, and placeholder attributes via the TypeScript
-  compiler API.
+- **Phase 1 ✅ (shipped):** locale-file parity + interpolation validation.
+- **Phase 2 ✅ (shipped):** source-code analysis — hardcoded JSX text and
+  unlocalized `aria-label`, `title`, `alt`, and `placeholder` attributes via the
+  TypeScript compiler API.
 - **Phase 3:** PR integration — dedicated GitHub Action, changed-files-only mode,
   Markdown PR summaries, SARIF output.
 - **Phase 4:** framework adapters — `react-i18next`, `react-intl`, Next.js,

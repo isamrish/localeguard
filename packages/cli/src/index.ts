@@ -25,6 +25,7 @@ Options:
   -c, --config <path>     Path to a config file
   -r, --reporter <type>   Output format: text (default) or json
       --cwd <dir>         Run as if from this directory
+      --no-code           Skip source-code analysis (locale files only)
       --no-color          Disable colored output
   -h, --help              Show help
   -v, --version           Show version
@@ -47,6 +48,8 @@ export function main(argv: string[]): number {
         cwd: { type: "string" },
         color: { type: "boolean" },
         "no-color": { type: "boolean" },
+        code: { type: "boolean" },
+        "no-code": { type: "boolean" },
         help: { type: "boolean", short: "h" },
         version: { type: "boolean", short: "v" },
       },
@@ -80,7 +83,8 @@ export function main(argv: string[]): number {
         return 1;
       }
       const color = resolveColor(values.color, values["no-color"]);
-      return runCheckCommand({ cwd, configPath: values.config, reporter, color });
+      const code = !values["no-code"];
+      return runCheckCommand({ cwd, configPath: values.config, reporter, color, code });
     }
     case "init":
       return runInitCommand({ cwd });

@@ -25,16 +25,18 @@ npm run check:example
 
 ```text
 packages/
-  core/   @localeguard/core — parsing, key comparison, placeholder validation, reporters
-  cli/    localeguard — the CLI and config loader
+  core/             @localeguard/core — parsing, key comparison, placeholder validation, reporters
+  react-analyzer/   @localeguard/react-analyzer — hardcoded-text detection (TypeScript compiler API)
+  cli/              localeguard — the CLI, config loader, and result composition
 examples/
   react-i18next-app/   a small fixture used by check:example and the docs
 ```
 
 ## Guidelines
 
-- **Keep runtime dependencies at zero.** The core and CLI rely only on Node
-  built-ins. Please discuss before adding a dependency.
+- **Keep runtime dependencies minimal.** `core` and `cli` rely only on Node
+  built-ins; `react-analyzer` depends only on `typescript` (for its compiler
+  API). Please discuss before adding any new dependency.
 - **Add tests.** Use the built-in `node:test` runner; place tests under each
   package's `test/` directory. All checks should have unit coverage, and
   behavior changes should add an end-to-end case in `packages/core/test/check.test.ts`.

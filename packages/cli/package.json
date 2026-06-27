@@ -12,7 +12,8 @@
     "dist/src"
   ],
   "dependencies": {
-    "@localeguard/core": "0.1.0"
+    "@localeguard/core": "0.1.0",
+    "@localeguard/react-analyzer": "0.1.0"
   },
   "publishConfig": {
     "access": "public"

@@ -15,8 +15,8 @@ export {
 export type { PlaceholderDiff } from "./placeholder-validator/placeholder";
 export { loadLocale } from "./locale-parser/load";
 export type { LoadOptions } from "./locale-parser/load";
-export { runCheck, LocaleGuardError } from "./check";
-export type { RunCheckOptions } from "./check";
+export { runCheck, summarizeIssues, sortIssues, LocaleGuardError } from "./check";
+export type { RunCheckOptions, SummarizeParams } from "./check";
 export { formatText } from "./reporters/text";
 export type { TextReporterOptions } from "./reporters/text";
 export { formatJson } from "./reporters/json";

@@ -13,6 +13,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import { ISSUE_TYPES } from "@localeguard/core";
 import type { IssueType, LocaleGuardConfig } from "@localeguard/core";
 
 export class ConfigError extends Error {
@@ -28,13 +29,7 @@ export interface LoadedConfig {
   configPath: string;
 }
 
-const VALID_BLOCK_ON: IssueType[] = [
-  "invalid-json",
-  "missing-key",
-  "extra-key",
-  "duplicate-key",
-  "placeholder-mismatch",
-];
+const VALID_BLOCK_ON: IssueType[] = ISSUE_TYPES;
 
 export function loadConfig(opts: { cwd: string; configPath?: string }): LoadedConfig {
   const { cwd } = opts;

@@ -1,8 +1,18 @@
 /**
- * `localeguard check` — run the locale-parity check and report results.
+ * `localeguard check` — run the locale-parity and source-code checks, merge the
+ * results, and report them.
  */
 
-import { formatJson, formatText, LocaleGuardError, runCheck } from "@localeguard/core";
+import {
+  formatJson,
+  formatText,
+  LocaleGuardError,
+  runCheck,
+  sortIssues,
+  summarizeIssues,
+} from "@localeguard/core";
+import type { CheckResult, Issue } from "@localeguard/core";
+import { analyzeProject } from "@localeguard/react-analyzer";
 
 import { ConfigError, loadConfig } from "../config";
 
@@ -11,6 +21,8 @@ export interface CheckArgs {
   configPath?: string;
   reporter: "text" | "json";
   color: boolean;
+  /** Run source-code analysis (hardcoded text). Defaults to true. */
+  code: boolean;
 }
 
 /** Returns the process exit code. */
@@ -26,9 +38,11 @@ export function runCheckCommand(args: CheckArgs): number {
     throw err;
   }
 
-  let result;
+  const { config, rootDir } = loaded;
+
+  let localeResult: CheckResult;
   try {
-    result = runCheck(loaded.config, { rootDir: loaded.rootDir });
+    localeResult = runCheck(config, { rootDir });
   } catch (err) {
     if (err instanceof LocaleGuardError) {
       process.stderr.write(`localeguard: ${err.message}\n`);
@@ -36,6 +50,27 @@ export function runCheckCommand(args: CheckArgs): number {
     }
     throw err;
   }
+
+  const codeIssues: Issue[] = args.code
+    ? analyzeProject(
+        {
+          include: config.include,
+          ignore: config.ignore,
+          translationComponents: config.translationComponents,
+        },
+        { rootDir },
+      )
+    : [];
+
+  const issues = [...localeResult.issues, ...codeIssues];
+  sortIssues(issues);
+  const stats = summarizeIssues(issues, {
+    sourceLocale: config.sourceLocale,
+    sourceKeyCount: localeResult.stats.sourceKeyCount,
+    locales: config.locales,
+    blockOn: config.blockOn,
+  });
+  const result: CheckResult = { issues, stats, missingLocales: localeResult.missingLocales };
 
   if (args.reporter === "json") {
     process.stdout.write(formatJson(result) + "\n");

@@ -75,3 +75,47 @@ test("missing config reports a helpful error", () => {
   const code = main(["check", "--cwd", root]);
   assert.equal(code, 1);
 });
+
+test("check runs code analysis and reports hardcoded text", () => {
+  const root = tempProject({
+    "localeguard.config.json": { sourceLocale: "en", locales: ["fr"], localesPath: "locales" },
+    "locales/en.json": { a: "A" },
+    "locales/fr.json": { a: "A-fr" },
+    "src/App.tsx": "export const App = () => <h1>Hardcoded Title</h1>;",
+  });
+  const { code, out } = captureStdout(() => main(["check", "--cwd", root, "--reporter", "json"]));
+  // Hardcoded text is a warning by default, so the run still passes.
+  assert.equal(code, 0);
+  const report = JSON.parse(out);
+  assert.equal(report.stats.byType["hardcoded-string"], 1);
+});
+
+test("--no-code skips source analysis", () => {
+  const root = tempProject({
+    "localeguard.config.json": { sourceLocale: "en", locales: ["fr"], localesPath: "locales" },
+    "locales/en.json": { a: "A" },
+    "locales/fr.json": { a: "A-fr" },
+    "src/App.tsx": "export const App = () => <h1>Hardcoded Title</h1>;",
+  });
+  const { code, out } = captureStdout(() =>
+    main(["check", "--cwd", root, "--no-code", "--reporter", "json"]),
+  );
+  assert.equal(code, 0);
+  assert.equal(JSON.parse(out).stats.byType["hardcoded-string"], 0);
+});
+
+test("blockOn can make hardcoded text fail the build", () => {
+  const root = tempProject({
+    "localeguard.config.json": {
+      sourceLocale: "en",
+      locales: ["fr"],
+      localesPath: "locales",
+      blockOn: ["hardcoded-string"],
+    },
+    "locales/en.json": { a: "A" },
+    "locales/fr.json": { a: "A-fr" },
+    "src/App.tsx": "export const App = () => <h1>Hardcoded Title</h1>;",
+  });
+  const { code } = captureStdout(() => main(["check", "--cwd", root, "--no-color"]));
+  assert.equal(code, 1);
+});

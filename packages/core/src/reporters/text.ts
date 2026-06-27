@@ -83,6 +83,8 @@ function summaryLine(
   if (t["placeholder-mismatch"]) parts.push(`${t["placeholder-mismatch"]} interpolation`);
   if (t["duplicate-key"]) parts.push(`${t["duplicate-key"]} duplicate`);
   if (t["invalid-json"]) parts.push(`${t["invalid-json"]} invalid-json`);
+  if (t["hardcoded-string"]) parts.push(`${t["hardcoded-string"]} hardcoded-text`);
+  if (t["hardcoded-attribute"]) parts.push(`${t["hardcoded-attribute"]} hardcoded-attr`);
   const detail = parts.length ? parts.join(", ") : "no issues";
   return c(ANSI.bold, "Summary: ") + detail;
 }

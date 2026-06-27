@@ -8,15 +8,30 @@ export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue
 export type IssueSeverity = "error" | "warning";
 
 /**
- * The categories of problems LocaleGuard can detect in this release.
- * Code-analysis categories (hardcoded-string, etc.) are reserved for Phase 2.
+ * The categories of problems LocaleGuard can detect.
+ *   - Locale-file checks: invalid-json, missing-key, extra-key, duplicate-key,
+ *     placeholder-mismatch.
+ *   - Source-code checks (Phase 2): hardcoded-string, hardcoded-attribute.
  */
 export type IssueType =
   | "invalid-json"
   | "missing-key"
   | "extra-key"
   | "duplicate-key"
-  | "placeholder-mismatch";
+  | "placeholder-mismatch"
+  | "hardcoded-string"
+  | "hardcoded-attribute";
+
+/** Every issue type, in display order. */
+export const ISSUE_TYPES: IssueType[] = [
+  "invalid-json",
+  "duplicate-key",
+  "missing-key",
+  "extra-key",
+  "placeholder-mismatch",
+  "hardcoded-string",
+  "hardcoded-attribute",
+];
 
 export interface Issue {
   type: IssueType;
@@ -43,13 +58,13 @@ export interface LocaleGuardConfig {
   locales: string[];
   /** Directory holding locale files, relative to the project root. */
   localesPath: string;
-  /** Glob patterns of source files (reserved for Phase 2 code analysis). */
+  /** Glob patterns of source files to analyze (defaults to src/**\/*.{ts,tsx}). */
   include?: string[];
-  /** Translation function names (reserved for Phase 2). */
+  /** Translation function names, e.g. "t", "i18n.t" (used by code analysis). */
   translationFunctions?: string[];
-  /** Translation component names (reserved for Phase 2). */
+  /** Translation component names, e.g. "Trans" (text inside is not flagged). */
   translationComponents?: string[];
-  /** Glob patterns to ignore (reserved for Phase 2). */
+  /** Glob patterns to exclude from code analysis. */
   ignore?: string[];
   /** Issue types that should fail the check (non-zero exit). */
   blockOn?: IssueType[];
@@ -105,4 +120,8 @@ export const SEVERITY_BY_TYPE: Record<IssueType, IssueSeverity> = {
   "extra-key": "warning",
   "duplicate-key": "error",
   "placeholder-mismatch": "error",
+  // Hardcoded text is reported but non-blocking by default: it is more
+  // prone to false positives, so teams opt in via `blockOn`.
+  "hardcoded-string": "warning",
+  "hardcoded-attribute": "warning",
 };
