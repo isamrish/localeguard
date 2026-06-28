@@ -142,6 +142,36 @@ test("unknown reporter is rejected", () => {
   assert.equal(code, 1);
 });
 
+test("undefined-key flags a key used in code but missing from the locale", () => {
+  const root = tempProject({
+    "localeguard.config.json": { sourceLocale: "en", locales: ["fr"], localesPath: "locales" },
+    "locales/en.json": { greeting: "Hi", app: { title: "T" } },
+    "locales/fr.json": { greeting: "Salut", app: { title: "T-fr" } },
+    "src/App.tsx": "export const A = () => { const t = (k: string) => k; return t('app.title') + t('app.missing'); };",
+  });
+  const { code, out } = captureStdout(() => main(["check", "--cwd", root, "--reporter", "json"]));
+  const report = JSON.parse(out);
+  assert.equal(report.stats.byType["undefined-key"], 1); // app.missing only
+  assert.equal(code, 1); // undefined-key is blocking by default
+});
+
+test("unusedKeys config reports keys never referenced in code", () => {
+  const root = tempProject({
+    "localeguard.config.json": {
+      sourceLocale: "en",
+      locales: ["fr"],
+      localesPath: "locales",
+      unusedKeys: true,
+    },
+    "locales/en.json": { used: "U", dead: "D" },
+    "locales/fr.json": { used: "U", dead: "D" },
+    "src/App.tsx": "export const A = () => { const t = (k: string) => k; return t('used'); };",
+  });
+  const { out } = captureStdout(() => main(["check", "--cwd", root, "--reporter", "json"]));
+  const report = JSON.parse(out);
+  assert.equal(report.stats.byType["unused-key"], 1); // dead
+});
+
 test("blockOn can make hardcoded text fail the build", () => {
   const root = tempProject({
     "localeguard.config.json": {

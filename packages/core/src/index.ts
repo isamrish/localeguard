@@ -13,6 +13,8 @@ export { findFiles, globToRegExp } from "./glob";
 export type { FindFilesOptions } from "./glob";
 export { compareKeys } from "./key-comparator/compare";
 export type { KeyDiff } from "./key-comparator/compare";
+export { checkKeyUsage } from "./key-usage";
+export type { KeyUsageOptions } from "./key-usage";
 export {
   extractPlaceholders,
   comparePlaceholders,

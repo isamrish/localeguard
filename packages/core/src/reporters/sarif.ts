@@ -18,6 +18,8 @@ const RULE_DESCRIPTIONS: Record<IssueType, string> = {
   "extra-key": "A key exists in a target locale but not in the source locale.",
   "duplicate-key": "A key is declared more than once within a file.",
   "placeholder-mismatch": "Interpolation variables differ between source and target.",
+  "undefined-key": "A translation key used in code is missing from the source locale.",
+  "unused-key": "A locale key is never referenced in code.",
   "hardcoded-string": "Hardcoded, user-facing JSX text that should be localized.",
   "hardcoded-attribute": "Hardcoded localizable attribute value (aria-label, title, alt, placeholder).",
 };

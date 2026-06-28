@@ -70,6 +70,8 @@ function summaryParts(result: CheckResult): string[] {
   if (t["placeholder-mismatch"]) parts.push(`**${t["placeholder-mismatch"]}** interpolation`);
   if (t["duplicate-key"]) parts.push(`**${t["duplicate-key"]}** duplicate`);
   if (t["invalid-json"]) parts.push(`**${t["invalid-json"]}** invalid-json`);
+  if (t["undefined-key"]) parts.push(`**${t["undefined-key"]}** undefined key`);
+  if (t["unused-key"]) parts.push(`**${t["unused-key"]}** unused key`);
   if (t["hardcoded-string"]) parts.push(`**${t["hardcoded-string"]}** hardcoded text`);
   if (t["hardcoded-attribute"]) parts.push(`**${t["hardcoded-attribute"]}** hardcoded attr`);
   return parts;

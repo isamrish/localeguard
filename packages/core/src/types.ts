@@ -19,6 +19,8 @@ export type IssueType =
   | "extra-key"
   | "duplicate-key"
   | "placeholder-mismatch"
+  | "undefined-key"
+  | "unused-key"
   | "hardcoded-string"
   | "hardcoded-attribute";
 
@@ -29,6 +31,8 @@ export const ISSUE_TYPES: IssueType[] = [
   "missing-key",
   "extra-key",
   "placeholder-mismatch",
+  "undefined-key",
+  "unused-key",
   "hardcoded-string",
   "hardcoded-attribute",
 ];
@@ -88,6 +92,19 @@ export interface LocaleGuardConfig {
   ignore?: string[];
   /** Issue types that should fail the check (non-zero exit). */
   blockOn?: IssueType[];
+  /** Opt in to reporting locale keys never referenced in code (default false). */
+  unusedKeys?: boolean;
+}
+
+/** A literal translation-key reference found in source code. */
+export interface KeyReference {
+  /** The literal key as written, e.g. "app.title" or "common:save". */
+  key: string;
+  /** Namespace in scope (from useTranslations/useTranslation), if resolved. */
+  namespace?: string;
+  /** File the reference was found in, relative to the project root. */
+  file: string;
+  line: number;
 }
 
 /** A single translation entry resolved from a locale file. */
@@ -131,6 +148,7 @@ export const DEFAULT_BLOCK_ON: IssueType[] = [
   "missing-key",
   "duplicate-key",
   "placeholder-mismatch",
+  "undefined-key",
 ];
 
 /** Fixed severity per issue type for this release. */
@@ -140,6 +158,11 @@ export const SEVERITY_BY_TYPE: Record<IssueType, IssueSeverity> = {
   "extra-key": "warning",
   "duplicate-key": "error",
   "placeholder-mismatch": "error",
+  // A literal key referenced in code but absent from the source locale is a
+  // genuine defect (it will render the raw key).
+  "undefined-key": "error",
+  // Unused keys are reported but non-blocking, and the check is opt-in.
+  "unused-key": "warning",
   // Hardcoded text is reported but non-blocking by default: it is more
   // prone to false positives, so teams opt in via `blockOn`.
   "hardcoded-string": "warning",

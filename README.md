@@ -62,6 +62,19 @@ fails CI automatically.
 Both `{{double-brace}}` (i18next) and `{single-brace}` (ICU / react-intl)
 interpolation styles are recognized.
 
+**Code ↔ locale keys** (React/TypeScript)
+
+| Check | Description |
+| --- | --- |
+| `undefined-key` | A literal key used in code (`t('app.titel')`) that is missing from the source locale |
+| `unused-key` | A locale key never referenced in code (opt-in via `unusedKeys`; skipped when dynamic keys are present) |
+
+Key references are resolved namespace-aware: next-intl `useTranslations('Home')` +
+`t('title')` → `Home.title`, react-i18next `t('ns:key')`, and default-namespace
+directory layouts. Only **literal** keys are checked; `` t(`${x}`) `` is treated as
+dynamic. `undefined-key` only fires on keys specific enough to be confident
+(dotted/namespaced), keeping false positives low.
+
 **Source code** — React/TypeScript JSX (via the TypeScript compiler API) and
 Vue/Angular templates (via a dependency-free template scanner)
 
@@ -126,8 +139,9 @@ conservatively — LocaleGuard under-reports rather than risk a false positive.
 | `locales` | yes | Target locales to validate |
 | `localesPath` | yes | Directory holding locale files (relative to the config) |
 | `blockOn` | no | Issue types that fail the check (defaults to all but `extra-key`) |
-| `framework` | no | Preset: `react-i18next` (default behavior) or `react-intl` |
+| `framework` | no | Preset: `react-i18next`, `react-intl`, `next-intl`, `vue-i18n`, `ngx-translate` |
 | `messageFormat` | no | `plain` (default) or `icu-descriptor` (FormatJS message objects) |
+| `unusedKeys` | no | Report locale keys never referenced in code (default `false`) |
 | `include` | no | Source globs for code analysis (default `src/**/*.{ts,tsx}`) |
 | `translationFunctions`, `translationComponents` | no | Names treated as already-localized |
 | `ignore` | no | Globs excluded from code analysis |

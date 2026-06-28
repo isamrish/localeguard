@@ -7,17 +7,19 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 import {
+  checkKeyUsage,
   formatJson,
   formatMarkdown,
   formatSarif,
   formatText,
+  loadLocale,
   LocaleGuardError,
   runCheck,
   sortIssues,
   summarizeIssues,
 } from "@localeguard/core";
 import type { CheckResult, Issue } from "@localeguard/core";
-import { analyzeProject } from "@localeguard/react-analyzer";
+import { analyzeProject, extractKeyReferences } from "@localeguard/react-analyzer";
 import { analyzeTemplates } from "@localeguard/template-analyzer";
 
 import { ConfigError, loadConfig } from "../config";
@@ -66,27 +68,50 @@ export function runCheckCommand(args: CheckArgs): number {
     throw err;
   }
 
-  const codeIssues: Issue[] = args.code
-    ? [
-        ...analyzeProject(
-          {
-            include: config.include,
-            ignore: config.ignore,
-            translationComponents: config.translationComponents,
-          },
-          { rootDir },
-        ),
-        ...analyzeTemplates(
-          {
-            include: config.include,
-            ignore: config.ignore,
-            translationComponents: config.translationComponents,
-            framework: config.framework,
-          },
-          { rootDir },
-        ),
-      ]
-    : [];
+  const codeIssues: Issue[] = [];
+  if (args.code) {
+    codeIssues.push(
+      ...analyzeProject(
+        {
+          include: config.include,
+          ignore: config.ignore,
+          translationComponents: config.translationComponents,
+        },
+        { rootDir },
+      ),
+      ...analyzeTemplates(
+        {
+          include: config.include,
+          ignore: config.ignore,
+          translationComponents: config.translationComponents,
+          framework: config.framework,
+        },
+        { rootDir },
+      ),
+    );
+
+    // Key-usage: compare literal key references in code against the source locale.
+    const { references, hasDynamicKeys } = extractKeyReferences(
+      {
+        include: config.include,
+        ignore: config.ignore,
+        translationFunctions: config.translationFunctions,
+        translationComponents: config.translationComponents,
+      },
+      { rootDir },
+    );
+    const source = loadLocale(config.sourceLocale, {
+      rootDir,
+      localesPath: config.localesPath,
+      messageFormat: config.messageFormat,
+    });
+    codeIssues.push(
+      ...checkKeyUsage(source.entries, references, {
+        unusedKeys: config.unusedKeys,
+        hasDynamicKeys,
+      }),
+    );
+  }
 
   let issues = [...localeResult.issues, ...codeIssues];
 

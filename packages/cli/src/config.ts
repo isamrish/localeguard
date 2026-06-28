@@ -101,6 +101,9 @@ function validate(raw: Record<string, unknown>, source: string): LocaleGuardConf
   if (raw.messageFormat !== undefined && !VALID_MESSAGE_FORMATS.includes(raw.messageFormat as MessageFormat)) {
     fail(`"messageFormat" must be one of: ${VALID_MESSAGE_FORMATS.join(", ")}.`);
   }
+  if (raw.unusedKeys !== undefined && typeof raw.unusedKeys !== "boolean") {
+    fail('"unusedKeys" must be a boolean.');
+  }
 
   // Fill in framework-preset defaults for any fields the user left unset.
   return applyFramework({
@@ -114,6 +117,7 @@ function validate(raw: Record<string, unknown>, source: string): LocaleGuardConf
     translationComponents: raw.translationComponents as string[] | undefined,
     ignore: raw.ignore as string[] | undefined,
     blockOn: raw.blockOn as IssueType[] | undefined,
+    unusedKeys: raw.unusedKeys as boolean | undefined,
   });
 }
 

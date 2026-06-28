@@ -14,6 +14,9 @@ export default function HomePage() {
       <h1>{t("title")}</h1>
       <p>{t("greeting", { userName: "Ada" })}</p>
 
+      {/* Typo: "titel" is not a defined key — flagged as undefined-key. */}
+      <p>{t("titel")}</p>
+
       {/* Hardcoded aria-label — flagged. */}
       <button aria-label="Close">{t("items", { count: 3 })}</button>
     </main>

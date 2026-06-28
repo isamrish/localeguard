@@ -11,3 +11,5 @@ export {
 export type { AnalyzerConfig, AnalyzeOptions } from "./analyzer";
 export { findFiles, globToRegExp } from "./glob";
 export type { FindFilesOptions } from "./glob";
+export { extractKeyReferences, extractFromSource } from "./key-references";
+export type { KeyReferenceConfig, KeyReferenceResult } from "./key-references";

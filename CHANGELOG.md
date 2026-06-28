@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Key-usage checks** (React/TypeScript): `undefined-key` flags a literal
+  translation key used in code but missing from the source locale (blocking by
+  default); `unused-key` flags locale keys never referenced in code (opt-in via
+  `unusedKeys`, skipped when dynamic key usage is detected). Key references are
+  resolved namespace-aware (next-intl `useTranslations`, react-i18next `ns:key`,
+  default-namespace layouts), and only literal, specific keys are flagged.
 - **Framework presets** via a `framework` config option. `react-intl` reads
   FormatJS message descriptors (`{ "id": { "defaultMessage": "…" } }`) — the id
   is the key and interpolation is validated against `defaultMessage` — and treats
@@ -17,8 +23,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   with ICU interpolation and `useTranslations()`/`t()`. (Pages Router
   `next-i18next` is covered by the `react-i18next` preset.)
 - **`vue-i18n` preset**: JSON message files with `{var}` interpolation and
-  `"a | b | c"` pluralization (locale-file checks). Hardcoded-text detection in
-  `.vue` templates is not yet supported.
+  `"a | b | c"` pluralization.
 - **`ngx-translate` preset** (Angular): JSON files (`assets/i18n/{lang}.json`)
   with `{{var}}` interpolation. Native Angular i18n (XLIFF) is on the roadmap.
 - **`@localeguard/template-analyzer`**: hardcoded-text detection in Vue (`.vue`)
