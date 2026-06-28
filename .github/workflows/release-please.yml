@@ -1,0 +1,44 @@
+name: release-please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      # An npm automation/granular token with publish rights to the @localeguard
+      # org and "bypass 2FA". Add it as a repository secret named NPM_TOKEN.
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: "https://registry.npmjs.org"
+      - run: npm ci
+      - run: npm run build
+      # Dependency order: core -> analyzers -> cli.
+      - run: npm publish -w @localeguard/core --access public
+      - run: npm publish -w @localeguard/react-analyzer --access public
+      - run: npm publish -w @localeguard/template-analyzer --access public
+      - run: npm publish -w localeguard --access public

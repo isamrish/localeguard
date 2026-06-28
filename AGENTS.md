@@ -93,8 +93,10 @@ all three. No cycles.
   `msgid` (symbolic-id projects put the source text in `msgstr`).
 - **Baseline signatures are line-independent** (`type|file|locale|key|message`) —
   do not add line numbers to the signature.
-- **The CLI version is currently hardcoded** (`VERSION` in `cli/src/index.ts` and
-  the SARIF reporter default) — keep both in sync with the package version on release.
+- **Hardcoded version strings** (`VERSION` in `cli/src/index.ts`, the SARIF
+  reporter default) carry an `// x-release-please-version` annotation so
+  release-please bumps them automatically. If you add another, annotate it and
+  list its file under `extra-files` in `release-please-config.json`.
 
 ## Where things plug in
 

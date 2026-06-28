@@ -9,7 +9,7 @@ import { runCheckCommand } from "./commands/check";
 import type { Reporter } from "./commands/check";
 import { runInitCommand } from "./commands/init";
 
-const VERSION = "0.5.0";
+const VERSION = "0.5.0"; // x-release-please-version
 const REPORTERS: Reporter[] = ["text", "json", "markdown", "sarif"];
 
 const HELP = `LocaleGuard ${VERSION}

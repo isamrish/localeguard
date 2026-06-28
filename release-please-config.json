@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "bootstrap-sha": "01ee4029c36c39535353c30fe813c71ff29cbcbb",
+  "packages": {
+    "packages/core": {
+      "extra-files": ["src/reporters/sarif.ts"]
+    },
+    "packages/react-analyzer": {},
+    "packages/template-analyzer": {},
+    "packages/cli": {
+      "extra-files": ["src/index.ts"]
+    }
+  },
+  "plugins": [
+    "node-workspace",
+    {
+      "type": "linked-versions",
+      "groupName": "localeguard",
+      "components": [
+        "@localeguard/core",
+        "@localeguard/react-analyzer",
+        "@localeguard/template-analyzer",
+        "localeguard"
+      ]
+    }
+  ]
+}
