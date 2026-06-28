@@ -141,6 +141,7 @@ conservatively — LocaleGuard under-reports rather than risk a false positive.
 | `blockOn` | no | Issue types that fail the check (defaults to all but `extra-key`) |
 | `framework` | no | Preset: `react-i18next`, `react-intl`, `next-intl`, `vue-i18n`, `ngx-translate` |
 | `messageFormat` | no | `plain` (default) or `icu-descriptor` (FormatJS message objects) |
+| `localeFormat` | no | `json` (default) or `xliff` (Angular `.xlf` files) |
 | `unusedKeys` | no | Report locale keys never referenced in code (default `false`) |
 | `include` | no | Source globs for code analysis (default `src/**/*.{ts,tsx}`) |
 | `translationFunctions`, `translationComponents` | no | Names treated as already-localized |
@@ -160,6 +161,7 @@ any field):
 | `next-intl` | _(none)_ | `plain` nested namespaces, ICU `{var}` |
 | `vue-i18n` | `i18n-t` | `plain` nested JSON, `{var}` + `a \| b` plurals |
 | `ngx-translate` | _(none)_ | `plain` nested JSON, `{{var}}` |
+| `angular` | native i18n | XLIFF `messages.{locale}.xlf` (1.2 & 2.0), `<x>`/`<ph>` placeholders |
 
 With `react-intl`, LocaleGuard reads FormatJS message descriptors: the message
 **id** is the key and interpolation is validated against `defaultMessage`, so
@@ -178,9 +180,14 @@ descriptors are never mistaken for nested namespaces. See
 For Angular, `ngx-translate` covers its JSON files (`assets/i18n/{lang}.json`,
 `{{var}}`) **and** hardcoded-text detection in Angular `.html` templates
 (respecting `i18n` markers, the `translate` directive, and bindings). See
-[`examples/ngx-translate-app`](./examples/ngx-translate-app). **Native Angular
-i18n** (`@angular/localize`) uses XLIFF/XMB XML message files instead of JSON — an
-XLIFF locale parser for that is on the roadmap.
+[`examples/ngx-translate-app`](./examples/ngx-translate-app).
+
+**Native Angular i18n** (`@angular/localize`) uses the `angular` preset, which
+reads **XLIFF** message files (`messages.xlf` + `messages.{locale}.xlf`, XLIFF 1.2
+and 2.0). The trans-unit `id` is the key, a unit with an empty/missing `<target>`
+counts as untranslated (a missing key), and `<x>`/`<ph>` placeholders are compared
+for interpolation parity. See [`examples/angular-i18n-app`](./examples/angular-i18n-app).
+(XMB/XTB is not yet supported.)
 
 Template hardcoded-text analysis (Vue/Angular) is handled by
 [`@localeguard/template-analyzer`](./packages/template-analyzer); React/TypeScript
@@ -275,10 +282,9 @@ free and open source forever.
   TypeScript compiler API.
 - **Phase 3 ✅ (shipped):** PR integration — GitHub Action, Markdown summary,
   SARIF / code-scanning annotations, and changed-files-only mode.
-- **Phase 4 (in progress):** framework adapters — `react-i18next`, `react-intl`,
-  `next-intl`, `vue-i18n`, and `ngx-translate` ✅, with hardcoded-text analysis
-  for React JSX and Vue/Angular templates. Planned: native Angular i18n (XLIFF
-  locale parser).
+- **Phase 4 ✅ (shipped):** framework adapters — `react-i18next`, `react-intl`,
+  `next-intl`, `vue-i18n`, `ngx-translate`, and native `angular` (XLIFF), with
+  hardcoded-text analysis for React JSX and Vue/Angular templates.
 
 ## Contributing
 

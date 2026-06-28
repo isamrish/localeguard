@@ -1,0 +1,6 @@
+{
+  "framework": "angular",
+  "sourceLocale": "en",
+  "locales": ["fr"],
+  "localesPath": "src/locale"
+}

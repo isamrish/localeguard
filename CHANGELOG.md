@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Native Angular i18n (XLIFF)** via the `angular` framework preset and a
+  `localeFormat: "xliff"` option. Reads `messages.xlf` + `messages.{locale}.xlf`
+  (XLIFF 1.2 and 2.0): the trans-unit `id` is the key, an empty/missing
+  `<target>` counts as untranslated (missing key), and `<x>`/`<ph>` placeholders
+  are compared for interpolation parity.
+
 ### Fixed
 
 - The React analyzer no longer parses `.vue`/`.html` files as TSX when an

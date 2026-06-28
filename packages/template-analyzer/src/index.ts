@@ -27,8 +27,12 @@ export interface AnalyzeOptions {
 /** Default globs by framework when `include` is not set. */
 function defaultInclude(framework?: Framework): string[] {
   if (framework === "vue-i18n") return ["src/**/*.vue"];
-  if (framework === "ngx-translate") return ["src/**/*.html"];
+  if (framework === "ngx-translate" || framework === "angular") return ["src/**/*.html"];
   return [];
+}
+
+function isAngular(framework?: Framework): boolean {
+  return framework === "ngx-translate" || framework === "angular";
 }
 
 export function analyzeTemplates(config: TemplateAnalyzerConfig, opts: AnalyzeOptions): Issue[] {
@@ -36,7 +40,7 @@ export function analyzeTemplates(config: TemplateAnalyzerConfig, opts: AnalyzeOp
   if (include.length === 0) return [];
 
   const files = findFiles({ rootDir: opts.rootDir, include, ignore: config.ignore });
-  const angular = config.framework === "ngx-translate";
+  const angular = isAngular(config.framework);
   const issues: Issue[] = [];
 
   for (const absFile of files) {

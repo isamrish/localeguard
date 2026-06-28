@@ -42,6 +42,8 @@ export function runCheck(rawConfig: LocaleGuardConfig, opts: RunCheckOptions): C
     rootDir: opts.rootDir,
     localesPath: config.localesPath,
     messageFormat: config.messageFormat,
+    localeFormat: config.localeFormat,
+    sourceLocale: config.sourceLocale,
   };
   const source = loadLocale(config.sourceLocale, loadOpts);
   if (!source.found) {

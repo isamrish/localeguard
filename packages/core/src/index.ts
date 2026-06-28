@@ -22,6 +22,8 @@ export {
 export type { PlaceholderDiff } from "./placeholder-validator/placeholder";
 export { loadLocale } from "./locale-parser/load";
 export type { LoadOptions } from "./locale-parser/load";
+export { parseXliff } from "./locale-parser/xliff";
+export type { ParsedXliff, XliffUnit } from "./locale-parser/xliff";
 export { runCheck, summarizeIssues, sortIssues, LocaleGuardError } from "./check";
 export type { RunCheckOptions, SummarizeParams } from "./check";
 export { formatText } from "./reporters/text";

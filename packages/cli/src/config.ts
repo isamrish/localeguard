@@ -14,7 +14,13 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 import { applyFramework, ISSUE_TYPES } from "@localeguard/core";
-import type { Framework, IssueType, LocaleGuardConfig, MessageFormat } from "@localeguard/core";
+import type {
+  Framework,
+  IssueType,
+  LocaleFormat,
+  LocaleGuardConfig,
+  MessageFormat,
+} from "@localeguard/core";
 
 export class ConfigError extends Error {
   constructor(message: string) {
@@ -36,8 +42,10 @@ const VALID_FRAMEWORKS: Framework[] = [
   "next-intl",
   "vue-i18n",
   "ngx-translate",
+  "angular",
 ];
 const VALID_MESSAGE_FORMATS: MessageFormat[] = ["plain", "icu-descriptor"];
+const VALID_LOCALE_FORMATS: LocaleFormat[] = ["json", "xliff"];
 
 export function loadConfig(opts: { cwd: string; configPath?: string }): LoadedConfig {
   const { cwd } = opts;
@@ -101,6 +109,9 @@ function validate(raw: Record<string, unknown>, source: string): LocaleGuardConf
   if (raw.messageFormat !== undefined && !VALID_MESSAGE_FORMATS.includes(raw.messageFormat as MessageFormat)) {
     fail(`"messageFormat" must be one of: ${VALID_MESSAGE_FORMATS.join(", ")}.`);
   }
+  if (raw.localeFormat !== undefined && !VALID_LOCALE_FORMATS.includes(raw.localeFormat as LocaleFormat)) {
+    fail(`"localeFormat" must be one of: ${VALID_LOCALE_FORMATS.join(", ")}.`);
+  }
   if (raw.unusedKeys !== undefined && typeof raw.unusedKeys !== "boolean") {
     fail('"unusedKeys" must be a boolean.');
   }
@@ -109,6 +120,7 @@ function validate(raw: Record<string, unknown>, source: string): LocaleGuardConf
   return applyFramework({
     framework: raw.framework as Framework | undefined,
     messageFormat: raw.messageFormat as MessageFormat | undefined,
+    localeFormat: raw.localeFormat as LocaleFormat | undefined,
     sourceLocale: raw.sourceLocale as string,
     locales: raw.locales as string[],
     localesPath: raw.localesPath as string,

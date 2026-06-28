@@ -4,12 +4,13 @@
  * which a user can still override explicitly.
  */
 
-import type { Framework, LocaleGuardConfig, MessageFormat } from "./types";
+import type { Framework, LocaleFormat, LocaleGuardConfig, MessageFormat } from "./types";
 
 export interface FrameworkPreset {
   translationFunctions: string[];
   translationComponents: string[];
   messageFormat: MessageFormat;
+  localeFormat: LocaleFormat;
 }
 
 export const FRAMEWORK_PRESETS: Record<Framework, FrameworkPreset> = {
@@ -17,12 +18,14 @@ export const FRAMEWORK_PRESETS: Record<Framework, FrameworkPreset> = {
     translationFunctions: ["t", "i18n.t"],
     translationComponents: ["Trans"],
     messageFormat: "plain",
+    localeFormat: "json",
   },
   "react-intl": {
     // FormatJS: intl.formatMessage(...) and <FormattedMessage> / <FormattedHTMLMessage>.
     translationFunctions: ["formatMessage", "intl.formatMessage", "$t"],
     translationComponents: ["FormattedMessage", "FormattedHTMLMessage", "Trans"],
     messageFormat: "icu-descriptor",
+    localeFormat: "json",
   },
   "next-intl": {
     // App Router next-intl: useTranslations()/getTranslations() -> t(), ICU {var}
@@ -32,24 +35,32 @@ export const FRAMEWORK_PRESETS: Record<Framework, FrameworkPreset> = {
     translationFunctions: ["t", "useTranslations", "getTranslations"],
     translationComponents: [],
     messageFormat: "plain",
+    localeFormat: "json",
   },
   "vue-i18n": {
     // Vue I18n: t()/$t()/tc(), <i18n-t> component, plain nested JSON messages,
     // single-brace {var} interpolation (and "a | b | c" pluralization, which is
-    // plain text to the parity check). NOTE: hardcoded-text detection in .vue
-    // <template> blocks is not yet supported — only locale-file checks apply.
+    // plain text to the parity check).
     translationFunctions: ["t", "$t", "tc", "$tc"],
     translationComponents: ["i18n-t", "I18nT"],
     messageFormat: "plain",
+    localeFormat: "json",
   },
   "ngx-translate": {
     // Angular ngx-translate: TranslateService.instant/get(), `translate` pipe and
     // directive, plain nested JSON (assets/i18n/{lang}.json), {{var}} interpolation.
-    // Template hardcoded-text detection is out of scope. (For *native* Angular
-    // i18n, which uses XLIFF/XMB files, see the roadmap.)
     translationFunctions: ["instant", "get", "stream", "translate"],
     translationComponents: [],
     messageFormat: "plain",
+    localeFormat: "json",
+  },
+  angular: {
+    // Native Angular i18n (@angular/localize): XLIFF message files
+    // (messages.xlf + messages.{locale}.xlf), `i18n` template attributes.
+    translationFunctions: [],
+    translationComponents: [],
+    messageFormat: "plain",
+    localeFormat: "xliff",
   },
 };
 
@@ -65,5 +76,6 @@ export function applyFramework(config: LocaleGuardConfig): LocaleGuardConfig {
     translationFunctions: config.translationFunctions ?? preset.translationFunctions,
     translationComponents: config.translationComponents ?? preset.translationComponents,
     messageFormat: config.messageFormat ?? preset.messageFormat,
+    localeFormat: config.localeFormat ?? preset.localeFormat,
   };
 }

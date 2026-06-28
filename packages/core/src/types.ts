@@ -61,7 +61,8 @@ export type Framework =
   | "react-intl"
   | "next-intl"
   | "vue-i18n"
-  | "ngx-translate";
+  | "ngx-translate"
+  | "angular";
 
 /**
  * How values in a locale file are interpreted.
@@ -71,11 +72,16 @@ export type Framework =
  */
 export type MessageFormat = "plain" | "icu-descriptor";
 
+/** On-disk locale file format. */
+export type LocaleFormat = "json" | "xliff";
+
 export interface LocaleGuardConfig {
   /** Optional framework preset; fills defaults for the fields below. */
   framework?: Framework;
   /** How locale-file values are interpreted (defaults to "plain"). */
   messageFormat?: MessageFormat;
+  /** On-disk locale file format (defaults to "json"). */
+  localeFormat?: LocaleFormat;
   /** Reference locale every other locale is compared against. */
   sourceLocale: string;
   /** Target locales to validate. */
