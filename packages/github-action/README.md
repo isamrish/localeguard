@@ -23,11 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: isamrish/localeguard/packages/github-action@main
+      - uses: isamrish/localeguard/packages/github-action@v0.2.0
 ```
-
-> Requires `localeguard` ≥ 0.2.0 on npm (adds the SARIF/Markdown reporters the
-> action uses). Pin to a release tag like `@v0.2.0` once it's published.
 
 ## Inputs
 
@@ -51,7 +48,7 @@ the PR:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0          # required so the base ref is available
-      - uses: isamrish/localeguard/packages/github-action@main
+      - uses: isamrish/localeguard/packages/github-action@v0.2.0
         with:
           changed-only: true
 ```

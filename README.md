@@ -170,11 +170,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: isamrish/localeguard/packages/github-action@main
+      - uses: isamrish/localeguard/packages/github-action@v0.2.0
 ```
-
-> Requires `localeguard` ≥ 0.2.0 on npm (the release that adds the SARIF/Markdown
-> reporters). Pin to a release tag (e.g. `@v0.2.0`) once published.
 
 See the [action docs](./packages/github-action/README.md) for inputs.
 
