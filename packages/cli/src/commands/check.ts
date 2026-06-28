@@ -26,6 +26,7 @@ import {
 } from "@localeguard/react-analyzer";
 import {
   analyzeTemplates,
+  analyzeVueI18nBlocks,
   extractTemplateKeyReferences,
   scanAngularTemplate,
   scanTemplateString,
@@ -147,7 +148,22 @@ export function runCheckCommand(args: CheckArgs): number {
     );
   }
 
-  let issues = [...localeResult.issues, ...codeIssues];
+  // Vue <i18n> SFC blocks: per-component message parity (locale check, always on).
+  const blockIssues =
+    config.framework === "vue-i18n"
+      ? analyzeVueI18nBlocks(
+          {
+            sourceLocale: config.sourceLocale,
+            locales: config.locales,
+            framework: config.framework,
+            include: config.include,
+            ignore: config.ignore,
+          },
+          { rootDir },
+        )
+      : [];
+
+  let issues = [...localeResult.issues, ...codeIssues, ...blockIssues];
 
   if (args.changedBase !== undefined) {
     let changed: Set<string>;

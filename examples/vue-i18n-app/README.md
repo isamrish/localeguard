@@ -15,7 +15,11 @@ It also scans `src/components/HelloWorld.vue` and flags the hardcoded `<h1>` tex
 and the literal `alt` attribute, while leaving `{{ t(...) }}` interpolation and the
 bound `:aria-label` alone.
 
+The component also has an `<i18n>` SFC block; LocaleGuard checks parity between
+the locales declared inside it (here `tagline` is missing in `fr`).
+
 ## Scope
 
-This covers locale-file checks (parity, interpolation) **and** hardcoded-text
-detection in `.vue` `<template>` blocks. Disable code analysis with `--no-code`.
+This covers locale-file checks (parity, interpolation), `<i18n>` SFC block parity,
+**and** hardcoded-text detection in `.vue` `<template>` blocks. Disable code
+analysis with `--no-code`.

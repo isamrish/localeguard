@@ -174,8 +174,9 @@ descriptors are never mistaken for nested namespaces. See
 `next-i18next` is react-i18next under the hood — use the `react-i18next` preset.**
 
 `vue-i18n` covers JSON message files (parity + interpolation, including
-`"a | b | c"` pluralization) **and** hardcoded-text detection in `.vue`
-`<template>` blocks. See [`examples/vue-i18n-app`](./examples/vue-i18n-app).
+`"a | b | c"` pluralization), `<i18n>` SFC block parity, **and** hardcoded-text
+detection in `.vue` `<template>` blocks. See
+[`examples/vue-i18n-app`](./examples/vue-i18n-app).
 
 For Angular, `ngx-translate` covers its JSON files (`assets/i18n/{lang}.json`,
 `{{var}}`) **and** hardcoded-text detection in Angular `.html` templates

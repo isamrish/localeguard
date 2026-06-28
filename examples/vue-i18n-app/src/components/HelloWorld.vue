@@ -19,3 +19,11 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 const name = "Ada";
 </script>
+
+<!-- Per-component messages. "tagline" is missing in fr -> flagged. -->
+<i18n>
+{
+  "en": { "tagline": "Manage your clusters" },
+  "fr": {}
+}
+</i18n>

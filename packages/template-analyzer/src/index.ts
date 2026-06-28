@@ -72,3 +72,5 @@ export { scanVueSfc } from "./vue";
 export { scanAngularTemplate } from "./angular";
 export { extractTemplateKeyReferences, scanTemplateString } from "./key-references";
 export type { TemplateKeyConfig, TemplateKeyResult } from "./key-references";
+export { analyzeVueI18nBlocks } from "./vue-i18n-block";
+export type { VueI18nBlockConfig } from "./vue-i18n-block";

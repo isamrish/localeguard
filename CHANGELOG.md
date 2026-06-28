@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Vue `<i18n>` SFC blocks**: per-component message blocks are parsed and checked
+  for key + interpolation parity between the locales declared within each block.
 - **Inline Angular templates**: `@Component({ template: `…` })` strings are now
   scanned for hardcoded text and key references (with line numbers offset back
   into the `.ts` file), alongside external `.html` templates.
