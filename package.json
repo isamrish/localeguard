@@ -11,7 +11,7 @@
     "packages/cli"
   ],
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc -b && node -e \"require('fs').chmodSync('packages/cli/dist/src/index.js', 0o755)\"",
     "clean": "tsc -b --clean",
     "test": "npm run build && node --test packages/core/dist/test/*.test.js packages/react-analyzer/dist/test/*.test.js packages/template-analyzer/dist/test/*.test.js packages/cli/dist/test/*.test.js",
     "check:example": "node packages/cli/dist/src/index.js check --config examples/react-i18next-app/localeguard.config.json",

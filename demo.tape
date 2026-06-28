@@ -2,7 +2,7 @@
 #
 # Render to demo.gif with VHS (https://github.com/charmbracelet/vhs):
 #   brew install vhs        # (or see VHS install docs)
-#   npm run build && vhs demo.tape
+#   vhs demo.tape
 #
 # CI can render it via .github/workflows/demo.yml.
 
@@ -16,10 +16,13 @@ Set Padding 20
 Set Theme "Dracula"
 Set TypingSpeed 55ms
 
-# Setup (hidden): use the locally built CLI and run inside the example app.
+# Setup (hidden): build, then use the local CLI inside the example app.
 Hide
-Type `export PATH="$(git rev-parse --show-toplevel)/node_modules/.bin:$PATH"` Enter
-Type `cd "$(git rev-parse --show-toplevel)/examples/react-i18next-app"` Enter
+Type `ROOT="$(git rev-parse --show-toplevel)"` Enter
+Type `npm --prefix "$ROOT" run build >/dev/null 2>&1` Enter
+Sleep 12s
+Type `export PATH="$ROOT/node_modules/.bin:$PATH"` Enter
+Type `cd "$ROOT/examples/react-i18next-app"` Enter
 Type "clear" Enter
 Show
 
