@@ -21,6 +21,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `.vue` templates is not yet supported.
 - **`ngx-translate` preset** (Angular): JSON files (`assets/i18n/{lang}.json`)
   with `{{var}}` interpolation. Native Angular i18n (XLIFF) is on the roadmap.
+- **`@localeguard/template-analyzer`**: hardcoded-text detection in Vue (`.vue`)
+  and Angular (`.html`) templates via a zero-dependency template scanner. It
+  ignores `{{ interpolation }}`, bound attributes (`:title`/`[title]`),
+  translation components/directives (`<i18n-t>`, `i18n`, `translate`), and
+  technical elements. Composed automatically with the `vue-i18n`/`ngx-translate`
+  presets.
 
 ## [0.2.0] - 2026-06-28
 

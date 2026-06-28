@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "@localeguard/core": "0.2.0",
-    "@localeguard/react-analyzer": "0.2.0"
+    "@localeguard/react-analyzer": "0.2.0",
+    "@localeguard/template-analyzer": "0.2.0"
   },
   "publishConfig": {
     "access": "public"

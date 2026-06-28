@@ -11,9 +11,11 @@ interpolation in `greeting`. The `"a | b | c"` pluralization string is treated a
 plain text, so its differing wording is **not** flagged as long as the named
 variables (`{count}`) match.
 
+It also scans `src/components/HelloWorld.vue` and flags the hardcoded `<h1>` text
+and the literal `alt` attribute, while leaving `{{ t(...) }}` interpolation and the
+bound `:aria-label` alone.
+
 ## Scope
 
-This preset covers **locale-file checks** (parity, interpolation). Hardcoded-text
-detection inside `.vue` `<template>` blocks is not yet supported — that requires a
-Vue SFC parser and is tracked separately. Run with `--no-code` is unnecessary here
-since there are no `.ts`/`.tsx` sources to scan.
+This covers locale-file checks (parity, interpolation) **and** hardcoded-text
+detection in `.vue` `<template>` blocks. Disable code analysis with `--no-code`.

@@ -62,18 +62,21 @@ fails CI automatically.
 Both `{{double-brace}}` (i18next) and `{single-brace}` (ICU / react-intl)
 interpolation styles are recognized.
 
-**Source code** (React/TypeScript, via the TypeScript compiler API)
+**Source code** — React/TypeScript JSX (via the TypeScript compiler API) and
+Vue/Angular templates (via a dependency-free template scanner)
 
 | Check | Description |
 | --- | --- |
-| `hardcoded-string` | Literal user-facing JSX text, e.g. `<Button>Create Cluster</Button>` |
+| `hardcoded-string` | Literal user-facing JSX or template text, e.g. `<Button>Create Cluster</Button>` |
 | `hardcoded-attribute` | Literal `aria-label`, `title`, `alt`, or `placeholder` values |
 
 Source-code findings are **warnings by default** (non-blocking) to keep false
-positives from breaking builds — add them to `blockOn` to enforce. Values already
-wrapped in a translation call (`{t('...')}`), text inside `<Trans>`, empty `alt`,
-and non-text like `100%` are never flagged. Disable code analysis with
-`localeguard check --no-code`.
+positives from breaking builds — add them to `blockOn` to enforce. Anything
+already dynamic is left alone: translation calls (`{t('...')}`), `<Trans>`
+children, template `{{ interpolation }}`, bound attributes (`:title`, `[title]`),
+Angular `i18n`-marked text, the `translate` directive, empty `alt`, and non-text
+like `100%`. Technical elements (`<code>`, `<pre>`, …) are skipped. Disable code
+analysis with `localeguard check --no-code`.
 
 ## How is this different?
 
@@ -155,15 +158,19 @@ descriptors are never mistaken for nested namespaces. See
 `next-i18next` is react-i18next under the hood — use the `react-i18next` preset.**
 
 `vue-i18n` covers JSON message files (parity + interpolation, including
-`"a | b | c"` pluralization). See [`examples/vue-i18n-app`](./examples/vue-i18n-app).
-Note: hardcoded-text detection in `.vue` `<template>` blocks is **not** yet
-supported — that needs a Vue SFC parser. Today, source-code analysis is
-React/TypeScript only; the locale-file checks are framework-agnostic.
+`"a | b | c"` pluralization) **and** hardcoded-text detection in `.vue`
+`<template>` blocks. See [`examples/vue-i18n-app`](./examples/vue-i18n-app).
 
 For Angular, `ngx-translate` covers its JSON files (`assets/i18n/{lang}.json`,
-`{{var}}`). See [`examples/ngx-translate-app`](./examples/ngx-translate-app).
-**Native Angular i18n** (`@angular/localize`, `i18n` attributes) uses XLIFF/XMB XML
-message files instead of JSON — an XLIFF parser for that is on the roadmap.
+`{{var}}`) **and** hardcoded-text detection in Angular `.html` templates
+(respecting `i18n` markers, the `translate` directive, and bindings). See
+[`examples/ngx-translate-app`](./examples/ngx-translate-app). **Native Angular
+i18n** (`@angular/localize`) uses XLIFF/XMB XML message files instead of JSON — an
+XLIFF locale parser for that is on the roadmap.
+
+Template hardcoded-text analysis (Vue/Angular) is handled by
+[`@localeguard/template-analyzer`](./packages/template-analyzer); React/TypeScript
+JSX is handled by `@localeguard/react-analyzer`.
 
 ### Locale file layouts
 
@@ -255,8 +262,9 @@ free and open source forever.
 - **Phase 3 ✅ (shipped):** PR integration — GitHub Action, Markdown summary,
   SARIF / code-scanning annotations, and changed-files-only mode.
 - **Phase 4 (in progress):** framework adapters — `react-i18next`, `react-intl`,
-  `next-intl`, `vue-i18n`, and `ngx-translate` ✅. Planned: native Angular i18n
-  (XLIFF parser) and Vue/Angular `<template>` hardcoded-text analysis.
+  `next-intl`, `vue-i18n`, and `ngx-translate` ✅, with hardcoded-text analysis
+  for React JSX and Vue/Angular templates. Planned: native Angular i18n (XLIFF
+  locale parser).
 
 ## Contributing
 

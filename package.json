@@ -7,12 +7,13 @@
   "workspaces": [
     "packages/core",
     "packages/react-analyzer",
+    "packages/template-analyzer",
     "packages/cli"
   ],
   "scripts": {
     "build": "tsc -b",
     "clean": "tsc -b --clean",
-    "test": "npm run build && node --test packages/core/dist/test/*.test.js packages/react-analyzer/dist/test/*.test.js packages/cli/dist/test/*.test.js",
+    "test": "npm run build && node --test packages/core/dist/test/*.test.js packages/react-analyzer/dist/test/*.test.js packages/template-analyzer/dist/test/*.test.js packages/cli/dist/test/*.test.js",
     "check:example": "node packages/cli/dist/src/index.js check --config examples/react-i18next-app/localeguard.config.json",
     "pack:check": "npm run build && npm pack --workspaces --dry-run"
   },

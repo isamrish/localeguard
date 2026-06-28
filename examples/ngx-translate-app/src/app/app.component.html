@@ -1,0 +1,16 @@
+<main>
+  <!-- Hardcoded template text — flagged. -->
+  <h1>Cluster Manager</h1>
+
+  <!-- translate pipe — not flagged. -->
+  <p>{{ "GREETING" | translate: { name } }}</p>
+
+  <!-- Bound attribute — not flagged. -->
+  <button [attr.aria-label]="'NAV.HOME' | translate">{{ "NAV.HOME" | translate }}</button>
+
+  <!-- Hardcoded alt — flagged. -->
+  <img alt="Company logo" src="logo.png" />
+
+  <!-- Marked for native Angular i18n — intentional, not flagged. -->
+  <p i18n>Choose your settings below.</p>
+</main>

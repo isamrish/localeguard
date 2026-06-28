@@ -18,6 +18,7 @@ import {
 } from "@localeguard/core";
 import type { CheckResult, Issue } from "@localeguard/core";
 import { analyzeProject } from "@localeguard/react-analyzer";
+import { analyzeTemplates } from "@localeguard/template-analyzer";
 
 import { ConfigError, loadConfig } from "../config";
 import { filterIssuesToChanged, getChangedFiles, GitError } from "../git-changed";
@@ -66,14 +67,25 @@ export function runCheckCommand(args: CheckArgs): number {
   }
 
   const codeIssues: Issue[] = args.code
-    ? analyzeProject(
-        {
-          include: config.include,
-          ignore: config.ignore,
-          translationComponents: config.translationComponents,
-        },
-        { rootDir },
-      )
+    ? [
+        ...analyzeProject(
+          {
+            include: config.include,
+            ignore: config.ignore,
+            translationComponents: config.translationComponents,
+          },
+          { rootDir },
+        ),
+        ...analyzeTemplates(
+          {
+            include: config.include,
+            ignore: config.ignore,
+            translationComponents: config.translationComponents,
+            framework: config.framework,
+          },
+          { rootDir },
+        ),
+      ]
     : [];
 
   let issues = [...localeResult.issues, ...codeIssues];

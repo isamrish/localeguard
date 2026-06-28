@@ -1,0 +1,41 @@
+{
+  "name": "@localeguard/template-analyzer",
+  "version": "0.2.0",
+  "description": "Detect hardcoded text in Vue (.vue) and Angular (.html) templates for LocaleGuard.",
+  "license": "Apache-2.0",
+  "author": "isamrish",
+  "homepage": "https://github.com/isamrish/localeguard/tree/main/packages/template-analyzer#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isamrish/localeguard.git",
+    "directory": "packages/template-analyzer"
+  },
+  "bugs": {
+    "url": "https://github.com/isamrish/localeguard/issues"
+  },
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist/src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "prepublishOnly": "tsc -b"
+  },
+  "dependencies": {
+    "@localeguard/core": "0.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "localization",
+    "i18n",
+    "vue",
+    "angular",
+    "template",
+    "static-analysis"
+  ]
+}

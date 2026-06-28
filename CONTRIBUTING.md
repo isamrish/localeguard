@@ -26,8 +26,9 @@ npm run check:example
 ```text
 packages/
   core/             @localeguard/core — parsing, key comparison, placeholder validation, reporters
-  react-analyzer/   @localeguard/react-analyzer — hardcoded-text detection (TypeScript compiler API)
-  cli/              localeguard — the CLI, config loader, and result composition
+  react-analyzer/     @localeguard/react-analyzer — hardcoded text in React/TSX (TS compiler API)
+  template-analyzer/  @localeguard/template-analyzer — hardcoded text in Vue/Angular templates
+  cli/                localeguard — the CLI, config loader, and result composition
 examples/
   react-i18next-app/   a small fixture used by check:example and the docs
 ```
