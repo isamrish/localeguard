@@ -1,6 +1,6 @@
 {
   "name": "@localeguard/react-analyzer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Static analysis for LocaleGuard: detect hardcoded JSX text and unlocalized accessibility attributes in React/TypeScript source.",
   "license": "Apache-2.0",
   "author": "isamrish",
@@ -25,7 +25,7 @@
     "prepublishOnly": "tsc -b"
   },
   "dependencies": {
-    "@localeguard/core": "0.1.0",
+    "@localeguard/core": "0.2.0",
     "typescript": "^5.7.0"
   },
   "publishConfig": {

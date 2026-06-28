@@ -6,6 +6,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-28
+
+Pull-request integration.
+
 ### Added
 
 - **Markdown reporter** (`--reporter markdown`) for PR comments and GitHub job
@@ -49,5 +53,6 @@ First public release. Packages: `localeguard` (CLI), `@localeguard/core`,
 - Source-code findings (`hardcoded-string`, `hardcoded-attribute`) are warnings
   by default and non-blocking; add them to `blockOn` to enforce.
 
-[Unreleased]: https://github.com/isamrish/localeguard/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/isamrish/localeguard/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/isamrish/localeguard/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/isamrish/localeguard/releases/tag/v0.1.0

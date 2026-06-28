@@ -1,6 +1,6 @@
 {
   "name": "@localeguard/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Core localization checks for LocaleGuard: locale parsing, key comparison, and interpolation validation.",
   "license": "Apache-2.0",
   "author": "isamrish",
