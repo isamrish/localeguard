@@ -1,5 +1,8 @@
 # LocaleGuard GitHub Action
 
+> The action metadata (`action.yml`) lives at the **repository root** (required
+> for GitHub Marketplace). This file is supplementary docs.
+
 Run [LocaleGuard](https://github.com/isamrish/localeguard) as a pull-request
 quality gate. The action:
 
@@ -23,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: isamrish/localeguard/packages/github-action@v0.2.0
+      - uses: isamrish/localeguard@v1
 ```
 
 ## Inputs
@@ -48,7 +51,7 @@ the PR:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0          # required so the base ref is available
-      - uses: isamrish/localeguard/packages/github-action@v0.2.0
+      - uses: isamrish/localeguard@v1
         with:
           changed-only: true
 ```

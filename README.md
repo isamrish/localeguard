@@ -249,7 +249,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: isamrish/localeguard/packages/github-action@v0.2.0
+      - uses: isamrish/localeguard@v1
 ```
 
 See the [action docs](./packages/github-action/README.md) for inputs.
