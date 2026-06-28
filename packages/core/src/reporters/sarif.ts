@@ -59,7 +59,7 @@ export function formatSarif(result: CheckResult, opts: SarifReporterOptions = {}
           driver: {
             name: "LocaleGuard",
             informationUri: "https://github.com/isamrish/localeguard",
-            version: opts.toolVersion ?? "0.4.0",
+            version: opts.toolVersion ?? "0.5.0",
             rules,
           },
         },
