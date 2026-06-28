@@ -16,12 +16,14 @@ Set Padding 20
 Set Theme "Dracula"
 Set TypingSpeed 55ms
 
-# Setup (hidden): build, then use the local CLI inside the example app.
+# Setup (hidden): build, then expose `localeguard` as a function that runs the
+# built entrypoint directly — no dependency on npm having linked the bin, so this
+# works in CI and on a fresh clone.
 Hide
 Type `ROOT="$(git rev-parse --show-toplevel)"` Enter
 Type `npm --prefix "$ROOT" run build >/dev/null 2>&1` Enter
 Sleep 12s
-Type `export PATH="$ROOT/node_modules/.bin:$PATH"` Enter
+Type `localeguard() { node "$ROOT/packages/cli/dist/src/index.js" "$@"; }` Enter
 Type `cd "$ROOT/examples/react-i18next-app"` Enter
 Type "clear" Enter
 Show
