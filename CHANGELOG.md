@@ -8,6 +8,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Key-usage in templates**: `undefined-key`/`unused-key` now also cover Vue and
+  Angular templates — extracting `{{ t('key') }}`, `v-t`, `keypath`,
+  `{{ 'KEY' | translate }}`, and `[translate]` references.
 - **Native Angular i18n (XLIFF)** via the `angular` framework preset and a
   `localeFormat: "xliff"` option. Reads `messages.xlf` + `messages.{locale}.xlf`
   (XLIFF 1.2 and 2.0): the trans-unit `id` is the key, an empty/missing

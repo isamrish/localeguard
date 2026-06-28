@@ -20,7 +20,7 @@ import {
 } from "@localeguard/core";
 import type { CheckResult, Issue } from "@localeguard/core";
 import { analyzeProject, extractKeyReferences } from "@localeguard/react-analyzer";
-import { analyzeTemplates } from "@localeguard/template-analyzer";
+import { analyzeTemplates, extractTemplateKeyReferences } from "@localeguard/template-analyzer";
 
 import { ConfigError, loadConfig } from "../config";
 import { filterIssuesToChanged, getChangedFiles, GitError } from "../git-changed";
@@ -91,7 +91,7 @@ export function runCheckCommand(args: CheckArgs): number {
     );
 
     // Key-usage: compare literal key references in code against the source locale.
-    const { references, hasDynamicKeys } = extractKeyReferences(
+    const reactRefs = extractKeyReferences(
       {
         include: config.include,
         ignore: config.ignore,
@@ -100,15 +100,21 @@ export function runCheckCommand(args: CheckArgs): number {
       },
       { rootDir },
     );
+    const templateRefs = extractTemplateKeyReferences(
+      { include: config.include, ignore: config.ignore, framework: config.framework },
+      { rootDir },
+    );
     const source = loadLocale(config.sourceLocale, {
       rootDir,
       localesPath: config.localesPath,
       messageFormat: config.messageFormat,
+      localeFormat: config.localeFormat,
+      sourceLocale: config.sourceLocale,
     });
     codeIssues.push(
-      ...checkKeyUsage(source.entries, references, {
+      ...checkKeyUsage(source.entries, [...reactRefs.references, ...templateRefs.references], {
         unusedKeys: config.unusedKeys,
-        hasDynamicKeys,
+        hasDynamicKeys: reactRefs.hasDynamicKeys || templateRefs.hasDynamicKeys,
       }),
     );
   }
