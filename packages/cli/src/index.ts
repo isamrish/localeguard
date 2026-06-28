@@ -31,6 +31,7 @@ Options:
       --base <ref>        Git ref to diff against for --changed (default: HEAD)
       --baseline <path>   Baseline file of pre-existing issues to suppress
       --update-baseline   Write current issues to the baseline file and exit
+      --fix               Add missing keys to JSON target locales and exit
       --cwd <dir>         Run as if from this directory
       --no-code           Skip source-code analysis (locale files only)
       --no-color          Disable colored output
@@ -57,6 +58,7 @@ export function main(argv: string[]): number {
         base: { type: "string" },
         baseline: { type: "string" },
         "update-baseline": { type: "boolean" },
+        fix: { type: "boolean" },
         cwd: { type: "string" },
         color: { type: "boolean" },
         "no-color": { type: "boolean" },
@@ -110,6 +112,7 @@ export function main(argv: string[]): number {
         changedBase,
         baselinePath: values.baseline,
         updateBaseline: Boolean(values["update-baseline"]),
+        fix: Boolean(values.fix),
       });
     }
     case "init":

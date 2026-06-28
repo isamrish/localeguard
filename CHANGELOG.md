@@ -8,6 +8,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **`--fix`**: add missing keys to JSON target locale files, stubbed with the
+  source value (plain JSON locales only).
+- **Config JSON schema** (`schema/localeguard.config.schema.json`), referenced via
+  `$schema` in the config written by `localeguard init`.
 - **Baseline / suppressions**: `localeguard check --update-baseline` records
   current issues to `localeguard-baseline.json`; later runs suppress those
   pre-existing issues so only *new* ones fail. Entries match by a line-independent

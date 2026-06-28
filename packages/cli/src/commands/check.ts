@@ -35,6 +35,7 @@ import {
 } from "@localeguard/template-analyzer";
 
 import { ConfigError, loadConfig } from "../config";
+import { applyFix } from "../fix";
 import { filterIssuesToChanged, getChangedFiles, GitError } from "../git-changed";
 
 export type Reporter = "text" | "json" | "markdown" | "sarif";
@@ -56,6 +57,8 @@ export interface CheckArgs {
   baselinePath?: string;
   /** Write the current issues to the baseline file and exit. */
   updateBaseline: boolean;
+  /** Add missing keys to JSON target locales and exit. */
+  fix: boolean;
 }
 
 /** Returns the process exit code. */
@@ -186,6 +189,29 @@ export function runCheckCommand(args: CheckArgs): number {
   }
 
   sortIssues(issues);
+
+  // --fix: stub missing keys into JSON target locales, then stop.
+  if (args.fix) {
+    if ((config.localeFormat && config.localeFormat !== "json") || config.messageFormat === "icu-descriptor") {
+      process.stderr.write("localeguard: --fix only supports plain JSON locales.\n");
+      return 1;
+    }
+    const source = loadLocale(config.sourceLocale, {
+      rootDir,
+      localesPath: config.localesPath,
+      messageFormat: config.messageFormat,
+    });
+    const result = applyFix({
+      issues,
+      sourceEntries: source.entries,
+      rootDir,
+      localesPath: config.localesPath,
+    });
+    process.stderr.write(
+      `localeguard: added ${result.fixed} missing key(s) to ${result.files} file(s). Re-run to verify.\n`,
+    );
+    return 0;
+  }
 
   const baselinePath = path.resolve(args.cwd, args.baselinePath ?? config.baseline ?? "localeguard-baseline.json");
 

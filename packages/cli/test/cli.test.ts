@@ -152,6 +152,33 @@ test("--update-baseline writes a file, then the check passes; new issues still f
   assert.equal(main(["check", "--cwd", root, "--no-color"]), 1);
 });
 
+test("--fix adds missing keys to JSON target locales", () => {
+  const root = tempProject({
+    "localeguard.config.json": { sourceLocale: "en", locales: ["fr"], localesPath: "locales" },
+    "locales/en.json": { a: "A", b: "B" },
+    "locales/fr.json": { a: "A-fr" }, // b missing
+  });
+  assert.equal(main(["check", "--cwd", root, "--fix"]), 0);
+  const fr = JSON.parse(fs.readFileSync(path.join(root, "locales/fr.json"), "utf8"));
+  assert.equal(fr.b, "B"); // stubbed with the source value
+  // After fixing, the check passes.
+  assert.equal(main(["check", "--cwd", root, "--no-color"]), 0);
+});
+
+test("--fix is rejected for non-JSON locale formats", () => {
+  const root = tempProject({
+    "localeguard.config.json": {
+      framework: "angular",
+      sourceLocale: "en",
+      locales: ["fr"],
+      localesPath: "loc",
+    },
+    "loc/messages.xlf": '<xliff version="1.2"><file><body><trans-unit id="a"><source>A</source></trans-unit></body></file></xliff>',
+    "loc/messages.fr.xlf": '<xliff version="1.2"><file><body></body></file></xliff>',
+  });
+  assert.equal(main(["check", "--cwd", root, "--fix"]), 1);
+});
+
 test("unknown reporter is rejected", () => {
   const root = tempProject({
     "localeguard.config.json": { sourceLocale: "en", locales: ["fr"], localesPath: "locales" },

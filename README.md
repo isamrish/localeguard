@@ -269,6 +269,12 @@ locale, key, message), so edits elsewhere in a file don't break them. As issues
 are fixed and the baseline is regenerated, it shrinks toward zero. Point at a
 different file with `--baseline <path>` or the `baseline` config option.
 
+### Auto-stub missing keys
+
+`localeguard check --fix` adds missing keys to JSON target locale files, stubbed
+with the source value, so translators have an entry to fill in (plain JSON
+locales only).
+
 ### Reporters
 
 `localeguard check --reporter <type>` supports:
