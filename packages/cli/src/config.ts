@@ -115,6 +115,9 @@ function validate(raw: Record<string, unknown>, source: string): LocaleGuardConf
   if (raw.unusedKeys !== undefined && typeof raw.unusedKeys !== "boolean") {
     fail('"unusedKeys" must be a boolean.');
   }
+  if (raw.baseline !== undefined && typeof raw.baseline !== "string") {
+    fail('"baseline" must be a string (path to the baseline file).');
+  }
 
   // Fill in framework-preset defaults for any fields the user left unset.
   return applyFramework({
@@ -130,6 +133,7 @@ function validate(raw: Record<string, unknown>, source: string): LocaleGuardConf
     ignore: raw.ignore as string[] | undefined,
     blockOn: raw.blockOn as IssueType[] | undefined,
     unusedKeys: raw.unusedKeys as boolean | undefined,
+    baseline: raw.baseline as string | undefined,
   });
 }
 

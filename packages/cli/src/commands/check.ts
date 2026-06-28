@@ -7,7 +7,9 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 import {
+  applyBaseline,
   checkKeyUsage,
+  createBaseline,
   formatJson,
   formatMarkdown,
   formatSarif,
@@ -18,7 +20,7 @@ import {
   sortIssues,
   summarizeIssues,
 } from "@localeguard/core";
-import type { CheckResult, Issue, KeyReference } from "@localeguard/core";
+import type { Baseline, CheckResult, Issue, KeyReference } from "@localeguard/core";
 import {
   analyzeProject,
   extractInlineTemplates,
@@ -50,6 +52,10 @@ export interface CheckArgs {
   toolVersion: string;
   /** When set, only report issues touching files changed vs this git ref. */
   changedBase?: string;
+  /** Path to the baseline file (overrides config). */
+  baselinePath?: string;
+  /** Write the current issues to the baseline file and exit. */
+  updateBaseline: boolean;
 }
 
 /** Returns the process exit code. */
@@ -180,6 +186,32 @@ export function runCheckCommand(args: CheckArgs): number {
   }
 
   sortIssues(issues);
+
+  const baselinePath = path.resolve(args.cwd, args.baselinePath ?? config.baseline ?? "localeguard-baseline.json");
+
+  // Write/update the baseline from the full current issue set, then stop.
+  if (args.updateBaseline) {
+    fs.writeFileSync(baselinePath, JSON.stringify(createBaseline(issues), null, 2) + "\n", "utf8");
+    process.stderr.write(
+      `localeguard: wrote baseline with ${issues.length} issue(s) to ${baselinePath}\n`,
+    );
+    return 0;
+  }
+
+  // Suppress issues already recorded in the baseline file, if present.
+  let suppressed = 0;
+  if (fs.existsSync(baselinePath)) {
+    try {
+      const baseline = JSON.parse(fs.readFileSync(baselinePath, "utf8")) as Baseline;
+      const applied = applyBaseline(issues, baseline);
+      issues = applied.issues;
+      suppressed = applied.suppressed;
+    } catch (err) {
+      process.stderr.write(`localeguard: could not read baseline ${baselinePath}: ${(err as Error).message}\n`);
+      return 1;
+    }
+  }
+
   const stats = summarizeIssues(issues, {
     sourceLocale: config.sourceLocale,
     sourceKeyCount: localeResult.stats.sourceKeyCount,
@@ -196,6 +228,10 @@ export function runCheckCommand(args: CheckArgs): number {
     process.stderr.write(`localeguard: wrote ${args.reporter} report to ${outPath}\n`);
   } else {
     process.stdout.write(report + "\n");
+  }
+
+  if (suppressed > 0) {
+    process.stderr.write(`localeguard: ${suppressed} issue(s) suppressed by baseline.\n`);
   }
 
   return result.stats.failed ? 1 : 0;

@@ -6,6 +6,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Baseline / suppressions**: `localeguard check --update-baseline` records
+  current issues to `localeguard-baseline.json`; later runs suppress those
+  pre-existing issues so only *new* ones fail. Entries match by a line-independent
+  signature. Configurable via `--baseline <path>` or the `baseline` config option.
+
 ## [0.4.0] - 2026-06-28
 
 Completes the framework adapters: native Angular (XLIFF), template key-usage,

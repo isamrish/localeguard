@@ -132,6 +132,26 @@ test("--reporter sarif --output writes a valid SARIF file", () => {
   assert.ok(sarif.runs[0].results.length >= 1);
 });
 
+test("--update-baseline writes a file, then the check passes; new issues still fail", () => {
+  const root = tempProject({
+    "localeguard.config.json": { sourceLocale: "en", locales: ["fr"], localesPath: "locales" },
+    "locales/en.json": { a: "A", b: "B" },
+    "locales/fr.json": { a: "A-fr" }, // b missing
+  });
+
+  // Record the pre-existing issue.
+  const write = main(["check", "--cwd", root, "--update-baseline"]);
+  assert.equal(write, 0);
+  assert.ok(fs.existsSync(path.join(root, "localeguard-baseline.json")));
+
+  // Now it passes (the missing 'b' is baselined).
+  assert.equal(main(["check", "--cwd", root, "--no-color"]), 0);
+
+  // Introduce a new issue: drop 'a' too.
+  fs.writeFileSync(path.join(root, "locales/fr.json"), JSON.stringify({}));
+  assert.equal(main(["check", "--cwd", root, "--no-color"]), 1);
+});
+
 test("unknown reporter is rejected", () => {
   const root = tempProject({
     "localeguard.config.json": { sourceLocale: "en", locales: ["fr"], localesPath: "locales" },

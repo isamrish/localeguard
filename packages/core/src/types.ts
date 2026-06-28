@@ -100,6 +100,8 @@ export interface LocaleGuardConfig {
   blockOn?: IssueType[];
   /** Opt in to reporting locale keys never referenced in code (default false). */
   unusedKeys?: boolean;
+  /** Path to a baseline file of pre-existing issues to suppress (default localeguard-baseline.json). */
+  baseline?: string;
 }
 
 /** A literal translation-key reference found in source code. */

@@ -15,6 +15,8 @@ export { compareKeys } from "./key-comparator/compare";
 export type { KeyDiff } from "./key-comparator/compare";
 export { checkKeyUsage } from "./key-usage";
 export type { KeyUsageOptions } from "./key-usage";
+export { createBaseline, applyBaseline, issueSignature, BASELINE_VERSION } from "./baseline";
+export type { Baseline, BaselineEntry } from "./baseline";
 export {
   extractPlaceholders,
   comparePlaceholders,

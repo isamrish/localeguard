@@ -143,6 +143,7 @@ conservatively — LocaleGuard under-reports rather than risk a false positive.
 | `messageFormat` | no | `plain` (default) or `icu-descriptor` (FormatJS message objects) |
 | `localeFormat` | no | `json` (default) or `xliff` (Angular `.xlf` files) |
 | `unusedKeys` | no | Report locale keys never referenced in code (default `false`) |
+| `baseline` | no | Path to a baseline file (default `localeguard-baseline.json`) |
 | `include` | no | Source globs for code analysis (default `src/**/*.{ts,tsx}`) |
 | `translationFunctions`, `translationComponents` | no | Names treated as already-localized |
 | `ignore` | no | Globs excluded from code analysis |
@@ -249,6 +250,22 @@ Or run it directly in any workflow:
 ```yaml
 - run: npx localeguard check
 ```
+
+### Adopting on an existing project (baseline)
+
+Turning LocaleGuard on in a large codebase can surface a lot of pre-existing
+findings. Record them once as a **baseline** so only *new* issues fail the build:
+
+```bash
+localeguard check --update-baseline   # writes localeguard-baseline.json
+git add localeguard-baseline.json
+localeguard check                      # pre-existing issues suppressed; new ones fail
+```
+
+Baseline entries are matched by a **line-independent** signature (type, file,
+locale, key, message), so edits elsewhere in a file don't break them. As issues
+are fixed and the baseline is regenerated, it shrinks toward zero. Point at a
+different file with `--baseline <path>` or the `baseline` config option.
 
 ### Reporters
 

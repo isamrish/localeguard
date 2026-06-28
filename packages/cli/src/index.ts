@@ -29,6 +29,8 @@ Options:
   -o, --output <file>     Write the report to a file instead of stdout
       --changed           Only report issues in files changed vs --base
       --base <ref>        Git ref to diff against for --changed (default: HEAD)
+      --baseline <path>   Baseline file of pre-existing issues to suppress
+      --update-baseline   Write current issues to the baseline file and exit
       --cwd <dir>         Run as if from this directory
       --no-code           Skip source-code analysis (locale files only)
       --no-color          Disable colored output
@@ -53,6 +55,8 @@ export function main(argv: string[]): number {
         output: { type: "string", short: "o" },
         changed: { type: "boolean" },
         base: { type: "string" },
+        baseline: { type: "string" },
+        "update-baseline": { type: "boolean" },
         cwd: { type: "string" },
         color: { type: "boolean" },
         "no-color": { type: "boolean" },
@@ -104,6 +108,8 @@ export function main(argv: string[]): number {
         code,
         toolVersion: VERSION,
         changedBase,
+        baselinePath: values.baseline,
+        updateBaseline: Boolean(values["update-baseline"]),
       });
     }
     case "init":
