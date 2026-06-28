@@ -9,6 +9,8 @@ export { parseJson, JsonParseError } from "./json/parse";
 export type { ParsedJson } from "./json/parse";
 export { parseYaml, YamlParseError } from "./yaml/parse";
 export type { ParsedYaml } from "./yaml/parse";
+export { parsePo, poKey } from "./po/parse";
+export type { ParsedPo, PoEntry } from "./po/parse";
 export { flatten } from "./flatten";
 export type { FlattenOptions } from "./flatten";
 export { findFiles, globToRegExp } from "./glob";

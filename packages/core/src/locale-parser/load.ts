@@ -15,6 +15,7 @@ import * as path from "node:path";
 import { flatten } from "../flatten";
 import { parseJson } from "../json/parse";
 import { parseYaml } from "../yaml/parse";
+import { parsePo, poKey } from "../po/parse";
 import { SEVERITY_BY_TYPE } from "../types";
 import type { Issue, LoadedLocale, LocaleEntry, LocaleFormat, MessageFormat } from "../types";
 import { parseXliff } from "./xliff";
@@ -62,6 +63,9 @@ function listLocaleFiles(locale: string, opts: LoadOptions, extensions: string[]
 export function loadLocale(locale: string, opts: LoadOptions): LoadedLocale {
   if (opts.localeFormat === "xliff") {
     return loadXliffLocale(locale, opts);
+  }
+  if (opts.localeFormat === "po") {
+    return loadPoLocale(locale, opts);
   }
   const isYaml = opts.localeFormat === "yaml";
   const formatName = isYaml ? "YAML" : "JSON";
@@ -213,6 +217,75 @@ function loadXliffLocale(locale: string, opts: LoadOptions): LoadedLocale {
       entries.set(unit.id, { value: unit.source, file: relPath, line: unit.line });
     } else if (unit.target && unit.target.trim().length > 0) {
       entries.set(unit.id, { value: unit.target, file: relPath, line: unit.line });
+    }
+  }
+
+  return { locale, entries, issues, found: true };
+}
+
+/**
+ * Load a gettext PO locale. The source locale uses `msgid` as the value; target
+ * locales use `msgstr` (entries with an empty `msgstr` are untranslated and
+ * surface as missing keys). The key is the msgid (prefixed by msgctxt context).
+ */
+function loadPoLocale(locale: string, opts: LoadOptions): LoadedLocale {
+  const isSource = opts.sourceLocale === locale;
+  const base = path.resolve(opts.rootDir, opts.localesPath);
+  const names = isSource
+    ? [`${locale}.po`, `${locale}.pot`, "messages.pot", "messages.po"]
+    : [`${locale}.po`];
+
+  let absPath: string | undefined;
+  for (const name of names) {
+    const candidate = path.join(base, name);
+    if (isFile(candidate)) {
+      absPath = candidate;
+      break;
+    }
+  }
+  if (!absPath) return { locale, entries: new Map(), issues: [], found: false };
+
+  const relPath = path.relative(opts.rootDir, absPath) || absPath;
+  const entries = new Map<string, LocaleEntry>();
+  const issues: Issue[] = [];
+
+  let text: string;
+  try {
+    text = fs.readFileSync(absPath, "utf8");
+  } catch (err) {
+    issues.push({
+      type: "invalid-json",
+      severity: SEVERITY_BY_TYPE["invalid-json"],
+      locale,
+      file: relPath,
+      message: `Could not read PO file: ${(err as Error).message}`,
+    });
+    return { locale, entries, issues, found: true };
+  }
+
+  const parsed = parsePo(text);
+  for (const dup of parsed.duplicates) {
+    issues.push({
+      type: "duplicate-key",
+      severity: SEVERITY_BY_TYPE["duplicate-key"],
+      locale,
+      key: dup.key,
+      file: relPath,
+      line: dup.line,
+      message: `Duplicate msgid "${dup.key}"`,
+      suggestion: "Remove the duplicate entry.",
+    });
+  }
+
+  for (const entry of parsed.entries) {
+    const key = poKey(entry);
+    if (isSource) {
+      // Classic gettext puts the source text in msgid; symbolic-id projects put
+      // it in the source file's msgstr. Prefer msgstr when present.
+      const value = entry.msgstr.trim().length > 0 ? entry.msgstr : entry.msgid;
+      entries.set(key, { value, file: relPath, line: entry.line });
+    } else if (entry.msgstr.trim().length > 0) {
+      entries.set(key, { value: entry.msgstr, file: relPath, line: entry.line });
     }
   }
 

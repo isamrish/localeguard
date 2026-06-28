@@ -141,7 +141,7 @@ conservatively — LocaleGuard under-reports rather than risk a false positive.
 | `blockOn` | no | Issue types that fail the check (defaults to all but `extra-key`) |
 | `framework` | no | Preset: `react-i18next`, `react-intl`, `next-intl`, `vue-i18n`, `ngx-translate` |
 | `messageFormat` | no | `plain` (default) or `icu-descriptor` (FormatJS message objects) |
-| `localeFormat` | no | `json` (default) or `xliff` (Angular `.xlf` files) |
+| `localeFormat` | no | `json` (default), `yaml`, `xliff` (Angular `.xlf`), or `po` (gettext) |
 | `unusedKeys` | no | Report locale keys never referenced in code (default `false`) |
 | `baseline` | no | Path to a baseline file (default `localeguard-baseline.json`) |
 | `include` | no | Source globs for code analysis (default `src/**/*.{ts,tsx}`) |
@@ -205,6 +205,11 @@ Both common layouts are supported automatically:
 public/locales/en.json                 # single file per locale
 public/locales/en/translation.json     # per-namespace files (keys become "namespace:key")
 ```
+
+Besides JSON, set `localeFormat` for **YAML** (`.yaml`/`.yml`), **XLIFF**
+(`messages.{locale}.xlf`, via the `angular` preset), or **gettext PO**
+(`{locale}.po` + `messages.pot`). For XLIFF and PO, an empty target
+(`<target>` / `msgstr`) counts as untranslated → a missing key.
 
 ## CLI
 
