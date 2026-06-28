@@ -73,7 +73,7 @@ export type Framework =
 export type MessageFormat = "plain" | "icu-descriptor";
 
 /** On-disk locale file format. */
-export type LocaleFormat = "json" | "xliff";
+export type LocaleFormat = "json" | "xliff" | "yaml" | "po";
 
 export interface LocaleGuardConfig {
   /** Optional framework preset; fills defaults for the fields below. */

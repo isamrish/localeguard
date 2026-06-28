@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **YAML locale files** via `localeFormat: "yaml"` — a dependency-free parser for
+  the common subset (nested mappings, scalars, comments, scalar lists).
 - **`--fix`**: add missing keys to JSON target locale files, stubbed with the
   source value (plain JSON locales only).
 - **Config JSON schema** (`schema/localeguard.config.schema.json`), referenced via

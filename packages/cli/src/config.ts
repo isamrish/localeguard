@@ -45,7 +45,7 @@ const VALID_FRAMEWORKS: Framework[] = [
   "angular",
 ];
 const VALID_MESSAGE_FORMATS: MessageFormat[] = ["plain", "icu-descriptor"];
-const VALID_LOCALE_FORMATS: LocaleFormat[] = ["json", "xliff"];
+const VALID_LOCALE_FORMATS: LocaleFormat[] = ["json", "xliff", "yaml", "po"];
 
 export function loadConfig(opts: { cwd: string; configPath?: string }): LoadedConfig {
   const { cwd } = opts;

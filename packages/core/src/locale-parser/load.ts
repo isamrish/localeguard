@@ -13,7 +13,8 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 import { flatten } from "../flatten";
-import { JsonParseError, parseJson } from "../json/parse";
+import { parseJson } from "../json/parse";
+import { parseYaml } from "../yaml/parse";
 import { SEVERITY_BY_TYPE } from "../types";
 import type { Issue, LoadedLocale, LocaleEntry, LocaleFormat, MessageFormat } from "../types";
 import { parseXliff } from "./xliff";
@@ -36,23 +37,21 @@ interface LocaleFile {
   namespace: string | null;
 }
 
-function listLocaleFiles(locale: string, opts: LoadOptions): LocaleFile[] {
+function listLocaleFiles(locale: string, opts: LoadOptions, extensions: string[]): LocaleFile[] {
   const base = path.resolve(opts.rootDir, opts.localesPath);
   const files: LocaleFile[] = [];
 
-  const singleFile = path.join(base, `${locale}.json`);
-  if (isFile(singleFile)) {
-    files.push({ absPath: singleFile, namespace: null });
+  for (const ext of extensions) {
+    const singleFile = path.join(base, `${locale}${ext}`);
+    if (isFile(singleFile)) files.push({ absPath: singleFile, namespace: null });
   }
 
   const dir = path.join(base, locale);
   if (isDirectory(dir)) {
     for (const entry of fs.readdirSync(dir).sort()) {
-      if (entry.endsWith(".json")) {
-        files.push({
-          absPath: path.join(dir, entry),
-          namespace: entry.slice(0, -".json".length),
-        });
+      const ext = extensions.find((e) => entry.endsWith(e));
+      if (ext) {
+        files.push({ absPath: path.join(dir, entry), namespace: entry.slice(0, -ext.length) });
       }
     }
   }
@@ -64,7 +63,9 @@ export function loadLocale(locale: string, opts: LoadOptions): LoadedLocale {
   if (opts.localeFormat === "xliff") {
     return loadXliffLocale(locale, opts);
   }
-  const files = listLocaleFiles(locale, opts);
+  const isYaml = opts.localeFormat === "yaml";
+  const formatName = isYaml ? "YAML" : "JSON";
+  const files = listLocaleFiles(locale, opts, isYaml ? [".yaml", ".yml"] : [".json"]);
   const entries = new Map<string, LocaleEntry>();
   const issues: Issue[] = [];
 
@@ -87,9 +88,9 @@ export function loadLocale(locale: string, opts: LoadOptions): LoadedLocale {
 
     let parsed;
     try {
-      parsed = parseJson(text);
+      parsed = isYaml ? parseYaml(text) : parseJson(text);
     } catch (err) {
-      const pe = err as JsonParseError;
+      const pe = err as { line?: number; message: string };
       issues.push({
         type: "invalid-json",
         severity: SEVERITY_BY_TYPE["invalid-json"],
@@ -97,8 +98,8 @@ export function loadLocale(locale: string, opts: LoadOptions): LoadedLocale {
         namespace: namespace ?? undefined,
         file: relPath,
         line: pe.line,
-        message: `Invalid JSON: ${pe.message}`,
-        suggestion: "Fix the JSON syntax so the locale can be parsed.",
+        message: `Invalid ${formatName}: ${pe.message}`,
+        suggestion: `Fix the ${formatName} syntax so the locale can be parsed.`,
       });
       continue;
     }

@@ -7,6 +7,8 @@ export { FRAMEWORK_PRESETS, applyFramework } from "./framework";
 export type { FrameworkPreset } from "./framework";
 export { parseJson, JsonParseError } from "./json/parse";
 export type { ParsedJson } from "./json/parse";
+export { parseYaml, YamlParseError } from "./yaml/parse";
+export type { ParsedYaml } from "./yaml/parse";
 export { flatten } from "./flatten";
 export type { FlattenOptions } from "./flatten";
 export { findFiles, globToRegExp } from "./glob";
