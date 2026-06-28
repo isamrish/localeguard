@@ -1,0 +1,6 @@
+{
+  "framework": "ngx-translate",
+  "sourceLocale": "en",
+  "locales": ["fr"],
+  "localesPath": "src/assets/i18n"
+}

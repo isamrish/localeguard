@@ -30,7 +30,13 @@ export interface LoadedConfig {
 }
 
 const VALID_BLOCK_ON: IssueType[] = ISSUE_TYPES;
-const VALID_FRAMEWORKS: Framework[] = ["react-i18next", "react-intl", "next-intl", "vue-i18n"];
+const VALID_FRAMEWORKS: Framework[] = [
+  "react-i18next",
+  "react-intl",
+  "next-intl",
+  "vue-i18n",
+  "ngx-translate",
+];
 const VALID_MESSAGE_FORMATS: MessageFormat[] = ["plain", "icu-descriptor"];
 
 export function loadConfig(opts: { cwd: string; configPath?: string }): LoadedConfig {

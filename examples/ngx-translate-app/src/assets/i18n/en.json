@@ -1,0 +1,8 @@
+{
+  "NAV": {
+    "HOME": "Home",
+    "SETTINGS": "Settings"
+  },
+  "GREETING": "Hello, {{name}}",
+  "ITEMS": "You have {{count}} items"
+}

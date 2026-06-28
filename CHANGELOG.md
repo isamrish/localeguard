@@ -19,6 +19,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **`vue-i18n` preset**: JSON message files with `{var}` interpolation and
   `"a | b | c"` pluralization (locale-file checks). Hardcoded-text detection in
   `.vue` templates is not yet supported.
+- **`ngx-translate` preset** (Angular): JSON files (`assets/i18n/{lang}.json`)
+  with `{{var}}` interpolation. Native Angular i18n (XLIFF) is on the roadmap.
 
 ## [0.2.0] - 2026-06-28
 

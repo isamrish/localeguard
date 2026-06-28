@@ -42,6 +42,15 @@ export const FRAMEWORK_PRESETS: Record<Framework, FrameworkPreset> = {
     translationComponents: ["i18n-t", "I18nT"],
     messageFormat: "plain",
   },
+  "ngx-translate": {
+    // Angular ngx-translate: TranslateService.instant/get(), `translate` pipe and
+    // directive, plain nested JSON (assets/i18n/{lang}.json), {{var}} interpolation.
+    // Template hardcoded-text detection is out of scope. (For *native* Angular
+    // i18n, which uses XLIFF/XMB files, see the roadmap.)
+    translationFunctions: ["instant", "get", "stream", "translate"],
+    translationComponents: [],
+    messageFormat: "plain",
+  },
 };
 
 /**

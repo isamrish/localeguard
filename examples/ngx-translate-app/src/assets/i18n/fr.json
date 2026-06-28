@@ -1,0 +1,7 @@
+{
+  "NAV": {
+    "HOME": "Accueil"
+  },
+  "GREETING": "Bonjour, {{nom}}",
+  "ITEMS": "Vous avez {{count}} articles"
+}

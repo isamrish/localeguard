@@ -165,3 +165,26 @@ test("vue-i18n: pipe pluralization is plain text; named vars are validated", () 
   assert.equal(result.stats.byType["placeholder-mismatch"], 1); // greeting name -> nom
   // The "a | b | c" plural strings differ in wording but keep {count} -> no false positive.
 });
+
+test("ngx-translate: nested JSON with {{var}} interpolation", () => {
+  const root = fixture({
+    "i18n/en.json": {
+      NAV: { HOME: "Home", SETTINGS: "Settings" },
+      GREETING: "Hello, {{name}}",
+      ITEMS: "You have {{count}} items",
+    },
+    "i18n/fr.json": {
+      NAV: { HOME: "Accueil" }, // missing NAV.SETTINGS
+      GREETING: "Bonjour, {{nom}}", // variable renamed
+      ITEMS: "Vous avez {{count}} articles",
+    },
+  });
+
+  const result = runCheck(
+    { framework: "ngx-translate", sourceLocale: "en", locales: ["fr"], localesPath: "i18n" },
+    { rootDir: root },
+  );
+
+  assert.equal(result.stats.byType["missing-key"], 1); // NAV.SETTINGS
+  assert.equal(result.stats.byType["placeholder-mismatch"], 1); // name -> nom
+});
