@@ -1,6 +1,6 @@
 {
   "name": "localeguard",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Open-source localization quality gate for React and TypeScript projects. Detects missing keys, broken interpolation, and invalid locale files before merge.",
   "license": "Apache-2.0",
   "author": "isamrish",
@@ -28,9 +28,9 @@
     "prepublishOnly": "tsc -b"
   },
   "dependencies": {
-    "@localeguard/core": "0.2.0",
-    "@localeguard/react-analyzer": "0.2.0",
-    "@localeguard/template-analyzer": "0.2.0"
+    "@localeguard/core": "0.3.0",
+    "@localeguard/react-analyzer": "0.3.0",
+    "@localeguard/template-analyzer": "0.3.0"
   },
   "publishConfig": {
     "access": "public"
