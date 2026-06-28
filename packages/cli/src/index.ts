@@ -27,6 +27,8 @@ Options:
   -c, --config <path>     Path to a config file
   -r, --reporter <type>   Output format: text (default), json, markdown, sarif
   -o, --output <file>     Write the report to a file instead of stdout
+      --changed           Only report issues in files changed vs --base
+      --base <ref>        Git ref to diff against for --changed (default: HEAD)
       --cwd <dir>         Run as if from this directory
       --no-code           Skip source-code analysis (locale files only)
       --no-color          Disable colored output
@@ -49,6 +51,8 @@ export function main(argv: string[]): number {
         config: { type: "string", short: "c" },
         reporter: { type: "string", short: "r" },
         output: { type: "string", short: "o" },
+        changed: { type: "boolean" },
+        base: { type: "string" },
         cwd: { type: "string" },
         color: { type: "boolean" },
         "no-color": { type: "boolean" },
@@ -90,6 +94,7 @@ export function main(argv: string[]): number {
       }
       const color = resolveColor(values.color, values["no-color"]);
       const code = !values["no-code"];
+      const changedBase = values.changed ? (values.base ?? "HEAD") : undefined;
       return runCheckCommand({
         cwd,
         configPath: values.config,
@@ -98,6 +103,7 @@ export function main(argv: string[]): number {
         color,
         code,
         toolVersion: VERSION,
+        changedBase,
       });
     }
     case "init":

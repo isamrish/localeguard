@@ -30,6 +30,14 @@ inputs:
     description: "Upload SARIF results to GitHub code scanning (inline PR annotations)."
     required: false
     default: "true"
+  changed-only:
+    description: "Only report issues in files changed vs the base ref. Requires checkout with fetch-depth: 0."
+    required: false
+    default: "false"
+  base:
+    description: "Base git ref for changed-only mode. Defaults to the PR base on pull_request events."
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -48,10 +56,17 @@ runs:
         if [ -n "${{ inputs.config }}" ]; then CONFIG_ARG="--config ${{ inputs.config }}"; fi
         SARIF="${RUNNER_TEMP}/localeguard.sarif"
 
+        CHANGED_ARGS=""
+        if [ "${{ inputs.changed-only }}" = "true" ]; then
+          BASE="${{ inputs.base }}"
+          if [ -z "$BASE" ]; then BASE="${{ github.event.pull_request.base.sha }}"; fi
+          if [ -n "$BASE" ]; then CHANGED_ARGS="--changed --base $BASE"; fi
+        fi
+
         # SARIF report for code scanning. Capture the exit code but don't fail
         # the step yet — we still want to upload SARIF and render the summary
         # even when there are issues.
-        npx --yes localeguard@${{ inputs.version }} check $CONFIG_ARG ${{ inputs.args }} \
+        npx --yes localeguard@${{ inputs.version }} check $CONFIG_ARG $CHANGED_ARGS ${{ inputs.args }} \
           --reporter sarif --output "$SARIF"
         CODE=$?
 
@@ -62,7 +77,7 @@ runs:
 
         # Human-readable summary for the job page.
         {
-          npx --yes localeguard@${{ inputs.version }} check $CONFIG_ARG ${{ inputs.args }} \
+          npx --yes localeguard@${{ inputs.version }} check $CONFIG_ARG $CHANGED_ARGS ${{ inputs.args }} \
             --reporter markdown || true
         } >> "$GITHUB_STEP_SUMMARY"
 

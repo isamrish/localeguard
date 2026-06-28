@@ -15,6 +15,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **`--output <file>`** flag to write a report to a file (e.g. for SARIF upload).
 - **GitHub Action** (`packages/github-action`): runs the check, writes a job
   summary, uploads SARIF, and gates the build on blocking issues.
+- **Changed-files-only mode** (`--changed --base <ref>`) to report only issues
+  touching files changed vs a base git ref. Locale-parity issues are retained
+  when the relevant locale's files changed. The action exposes `changed-only`.
 
 ## [0.1.0] - 2026-06-28
 

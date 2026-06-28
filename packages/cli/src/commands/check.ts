@@ -20,6 +20,7 @@ import type { CheckResult, Issue } from "@localeguard/core";
 import { analyzeProject } from "@localeguard/react-analyzer";
 
 import { ConfigError, loadConfig } from "../config";
+import { filterIssuesToChanged, getChangedFiles, GitError } from "../git-changed";
 
 export type Reporter = "text" | "json" | "markdown" | "sarif";
 
@@ -34,6 +35,8 @@ export interface CheckArgs {
   output?: string;
   /** Tool version, shown in markdown/sarif output. */
   toolVersion: string;
+  /** When set, only report issues touching files changed vs this git ref. */
+  changedBase?: string;
 }
 
 /** Returns the process exit code. */
@@ -73,7 +76,22 @@ export function runCheckCommand(args: CheckArgs): number {
       )
     : [];
 
-  const issues = [...localeResult.issues, ...codeIssues];
+  let issues = [...localeResult.issues, ...codeIssues];
+
+  if (args.changedBase !== undefined) {
+    let changed: Set<string>;
+    try {
+      changed = getChangedFiles(rootDir, args.changedBase);
+    } catch (err) {
+      if (err instanceof GitError) {
+        process.stderr.write(`localeguard: ${err.message}\n`);
+        return 1;
+      }
+      throw err;
+    }
+    issues = filterIssuesToChanged(issues, changed, config.localesPath);
+  }
+
   sortIssues(issues);
   const stats = summarizeIssues(issues, {
     sourceLocale: config.sourceLocale,

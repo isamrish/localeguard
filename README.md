@@ -197,6 +197,17 @@ Or run it directly in any workflow:
 | `markdown` | PR comment / job summary (`--output summary.md`) |
 | `sarif` | GitHub code scanning inline annotations (`--output out.sarif`) |
 
+### Changed-files-only mode
+
+For fast PR feedback, report only issues touching files changed vs a base ref:
+
+```bash
+localeguard check --changed --base origin/main
+```
+
+Locale-parity issues are kept when the relevant locale's files changed, even
+though they're reported against the source file.
+
 ## Roadmap
 
 LocaleGuard follows an open-core model: the scanner, CLI, and CI integration are
@@ -206,8 +217,8 @@ free and open source forever.
 - **Phase 2 ✅ (shipped):** source-code analysis — hardcoded JSX text and
   unlocalized `aria-label`, `title`, `alt`, and `placeholder` attributes via the
   TypeScript compiler API.
-- **Phase 3 (in progress):** PR integration — GitHub Action ✅, Markdown summary ✅,
-  SARIF / code-scanning annotations ✅. Remaining: changed-files-only mode.
+- **Phase 3 ✅ (shipped):** PR integration — GitHub Action, Markdown summary,
+  SARIF / code-scanning annotations, and changed-files-only mode.
 - **Phase 4:** framework adapters — `react-i18next`, `react-intl`, Next.js,
   Vue I18n, Angular.
 

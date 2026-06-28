@@ -39,6 +39,22 @@ jobs:
 | `node-version` | `20` | Node.js version to set up. |
 | `args` | `""` | Extra args for `localeguard check` (e.g. `--no-code`). |
 | `upload-sarif` | `true` | Upload SARIF to code scanning for inline annotations. |
+| `changed-only` | `false` | Only report issues in files changed vs the base ref. |
+| `base` | _(PR base)_ | Base ref for `changed-only`; defaults to the PR base on `pull_request`. |
+
+### Changed-files-only mode
+
+For fast feedback on large repos, report only issues touching files changed in
+the PR:
+
+```yaml
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # required so the base ref is available
+      - uses: isamrish/localeguard/packages/github-action@main
+        with:
+          changed-only: true
+```
 
 ## Notes
 
