@@ -6,6 +6,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- The React analyzer no longer parses `.vue`/`.html` files as TSX when an
+  `include` glob matches them, which previously double-reported template text
+  (once as JSX, once as template). It now scans only JS/TS source extensions.
+
 ## [0.3.0] - 2026-06-28
 
 Pull-request integration, framework adapters, template analysis, and key-usage

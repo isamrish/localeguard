@@ -25,6 +25,9 @@ import { findFiles } from "./glob";
 export const DEFAULT_INCLUDE = ["src/**/*.{ts,tsx}"];
 export const DEFAULT_TRANSLATION_COMPONENTS = ["Trans"];
 
+/** Only these extensions are parsed as React/TypeScript source. */
+const SOURCE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".mts", ".cts"]);
+
 /** Accessibility / UX attributes whose values reach end users. */
 const LOCALIZABLE_ATTRS = new Set(["aria-label", "title", "alt", "placeholder"]);
 
@@ -63,6 +66,9 @@ export function analyzeProject(config: AnalyzerConfig, opts: AnalyzeOptions): Is
 
   const issues: Issue[] = [];
   for (const absFile of files) {
+    // Only parse JS/TS sources — never .vue/.html (those go to the template
+    // analyzer), even when an `include` glob happens to match them.
+    if (!SOURCE_EXTENSIONS.has(path.extname(absFile).toLowerCase())) continue;
     let text: string;
     try {
       text = fs.readFileSync(absFile, "utf8");

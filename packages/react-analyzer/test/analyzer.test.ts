@@ -1,7 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 
-import { analyzeSource } from "../src/analyzer";
+import { analyzeSource, analyzeProject } from "../src/analyzer";
 import type { Issue } from "@localeguard/core";
 
 const TRANSLATION_COMPONENTS = new Set(["Trans"]);
@@ -77,6 +80,21 @@ test("text inside technical elements is not flagged", () => {
     </div>
   );`;
   assert.equal(analyze(code).length, 0);
+});
+
+test("analyzeProject ignores non-JS/TS files even if include matches them", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "lg-ext-"));
+  fs.mkdirSync(path.join(root, "src"), { recursive: true });
+  fs.writeFileSync(path.join(root, "src/App.vue"), "<template><h1>Vue Text</h1></template>");
+  fs.writeFileSync(path.join(root, "src/Page.tsx"), "export const P = () => <h1>Tsx Text</h1>;");
+
+  const issues = analyzeProject(
+    { include: ["src/**/*.{ts,tsx,vue}"] },
+    { rootDir: root },
+  );
+  // Only the .tsx file is parsed; the .vue file is left for the template analyzer.
+  assert.equal(issues.length, 1);
+  assert.match(issues[0]?.message ?? "", /Tsx Text/);
 });
 
 test("decorative and non-text content is not flagged", () => {
