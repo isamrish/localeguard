@@ -2,6 +2,10 @@ name: demo
 
 # Renders demo.tape to demo.gif and commits it. Run manually from the Actions
 # tab (or it re-renders when demo.tape changes).
+#
+# Note: rendering locally is simpler and reliable — `brew install vhs` then
+# `npm run build && vhs demo.tape`. This workflow installs the deps manually
+# because charmbracelet/vhs-action's bundled ffmpeg installer is unreliable.
 on:
   workflow_dispatch:
   push:
@@ -25,9 +29,24 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - uses: charmbracelet/vhs-action@v2
-        with:
-          path: demo.tape
+      - name: Install render dependencies (ffmpeg, ttyd, vhs)
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+
+          ttyd_url=$(curl -fsSL https://api.github.com/repos/tsl0922/ttyd/releases/latest \
+            | grep -o 'https://[^"]*ttyd\.x86_64' | head -1)
+          sudo curl -fsSL -o /usr/local/bin/ttyd "$ttyd_url"
+          sudo chmod +x /usr/local/bin/ttyd
+
+          vhs_url=$(curl -fsSL https://api.github.com/repos/charmbracelet/vhs/releases/latest \
+            | grep -o 'https://[^"]*Linux_x86_64\.tar\.gz' | head -1)
+          mkdir -p vhs-bin && curl -fsSL "$vhs_url" | tar -xz -C vhs-bin
+          sudo mv "$(find vhs-bin -name vhs -type f | head -1)" /usr/local/bin/vhs
+          ffmpeg -version | head -1 && ttyd --version && vhs --version
+
+      - run: vhs demo.tape
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
