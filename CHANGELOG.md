@@ -13,6 +13,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   is the key and interpolation is validated against `defaultMessage` — and treats
   `<FormattedMessage>` as a translation component. `react-i18next` remains the
   default. A `messageFormat` option (`plain` | `icu-descriptor`) is also exposed.
+- **`next-intl` preset** (App Router): nested-namespace `messages/{locale}.json`
+  with ICU interpolation and `useTranslations()`/`t()`. (Pages Router
+  `next-i18next` is covered by the `react-i18next` preset.)
 
 ## [0.2.0] - 2026-06-28
 

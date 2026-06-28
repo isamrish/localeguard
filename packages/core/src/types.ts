@@ -52,7 +52,7 @@ export interface Issue {
 }
 
 /** Supported framework presets (fill in sensible defaults for other fields). */
-export type Framework = "react-i18next" | "react-intl";
+export type Framework = "react-i18next" | "react-intl" | "next-intl";
 
 /**
  * How values in a locale file are interpreted.

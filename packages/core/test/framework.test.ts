@@ -91,3 +91,42 @@ test("react-intl: descriptor keys are not flattened, interpolation uses defaultM
   assert.equal(result.stats.byType["missing-key"], 1); // count
   assert.equal(result.stats.byType["placeholder-mismatch"], 1); // name -> prenom
 });
+
+test("next-intl preset uses plain messages and no translation component", () => {
+  const c = applyFramework({
+    framework: "next-intl",
+    sourceLocale: "en",
+    locales: ["fr"],
+    localesPath: "messages",
+  });
+  assert.equal(c.messageFormat, "plain");
+  assert.deepEqual(c.translationComponents, []);
+});
+
+test("next-intl: nested namespaces flatten and ICU interpolation is validated", () => {
+  const root = fixture({
+    "messages/en.json": {
+      HomePage: {
+        title: "Cluster Manager",
+        greeting: "Welcome, {userName}",
+        items: "{count, plural, one {# item} other {# items}}",
+      },
+    },
+    "messages/fr.json": {
+      HomePage: {
+        title: "Gestionnaire de clusters",
+        greeting: "Bienvenue, {nomUtilisateur}", // variable renamed
+        // "items" missing
+      },
+    },
+  });
+
+  const result = runCheck(
+    { framework: "next-intl", sourceLocale: "en", locales: ["fr"], localesPath: "messages" },
+    { rootDir: root },
+  );
+
+  assert.equal(result.stats.sourceKeyCount, 3); // HomePage.title / greeting / items
+  assert.equal(result.stats.byType["missing-key"], 1); // HomePage.items
+  assert.equal(result.stats.byType["placeholder-mismatch"], 1); // userName -> nomUtilisateur
+});

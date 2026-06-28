@@ -140,11 +140,17 @@ any field):
 | --- | --- | --- |
 | `react-i18next` (default) | `Trans` | `plain` — `{ "key": "value" }`, `{{var}}` |
 | `react-intl` | `FormattedMessage`, `Trans` | `icu-descriptor` — `{ "id": { "defaultMessage": "…" } }`, `{var}` |
+| `next-intl` | _(none)_ | `plain` nested namespaces, ICU `{var}` |
 
 With `react-intl`, LocaleGuard reads FormatJS message descriptors: the message
 **id** is the key and interpolation is validated against `defaultMessage`, so
 descriptors are never mistaken for nested namespaces. See
 [`examples/react-intl-app`](./examples/react-intl-app).
+
+`next-intl` (App Router) uses `useTranslations()`/`t()` and nested-namespace
+`messages/{locale}.json` with ICU interpolation. See
+[`examples/next-intl-app`](./examples/next-intl-app). **Pages Router
+`next-i18next` is react-i18next under the hood — use the `react-i18next` preset.**
 
 ### Locale file layouts
 
@@ -235,8 +241,8 @@ free and open source forever.
   TypeScript compiler API.
 - **Phase 3 ✅ (shipped):** PR integration — GitHub Action, Markdown summary,
   SARIF / code-scanning annotations, and changed-files-only mode.
-- **Phase 4 (in progress):** framework adapters — `react-i18next` and
-  `react-intl` ✅. Planned: Next.js, Vue I18n, Angular.
+- **Phase 4 (in progress):** framework adapters — `react-i18next`, `react-intl`,
+  and `next-intl` ✅. Planned: Vue I18n, Angular.
 
 ## Contributing
 

@@ -24,6 +24,15 @@ export const FRAMEWORK_PRESETS: Record<Framework, FrameworkPreset> = {
     translationComponents: ["FormattedMessage", "FormattedHTMLMessage", "Trans"],
     messageFormat: "icu-descriptor",
   },
+  "next-intl": {
+    // App Router next-intl: useTranslations()/getTranslations() -> t(), ICU {var}
+    // syntax, plain nested-namespace messages (messages/{locale}.json). It has no
+    // <Trans>-style wrapper component. (For Pages Router next-i18next, use the
+    // "react-i18next" preset — it is react-i18next under the hood.)
+    translationFunctions: ["t", "useTranslations", "getTranslations"],
+    translationComponents: [],
+    messageFormat: "plain",
+  },
 };
 
 /**

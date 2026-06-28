@@ -1,0 +1,6 @@
+{
+  "HomePage": {
+    "title": "Gestionnaire de clusters",
+    "greeting": "Bienvenue, {nomUtilisateur}"
+  }
+}
