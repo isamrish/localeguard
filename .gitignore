@@ -7,3 +7,6 @@ npm-debug.log*
 *.log
 .env
 .env.*
+
+# Local-only release runbook (not published to the public repo)
+RELEASING.md

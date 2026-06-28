@@ -3,11 +3,27 @@
   "version": "0.1.0",
   "description": "Core localization checks for LocaleGuard: locale parsing, key comparison, and interpolation validation.",
   "license": "Apache-2.0",
+  "author": "isamrish",
+  "homepage": "https://github.com/isamrish/localeguard/tree/main/packages/core#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isamrish/localeguard.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/isamrish/localeguard/issues"
+  },
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "files": [
     "dist/src"
   ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "prepublishOnly": "tsc -b"
+  },
   "publishConfig": {
     "access": "public"
   },
