@@ -8,6 +8,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Inline Angular templates**: `@Component({ template: `…` })` strings are now
+  scanned for hardcoded text and key references (with line numbers offset back
+  into the `.ts` file), alongside external `.html` templates.
 - **Key-usage in templates**: `undefined-key`/`unused-key` now also cover Vue and
   Angular templates — extracting `{{ t('key') }}`, `v-t`, `keypath`,
   `{{ 'KEY' | translate }}`, and `[translate]` references.

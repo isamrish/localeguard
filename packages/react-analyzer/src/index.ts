@@ -13,3 +13,5 @@ export { findFiles, globToRegExp } from "./glob";
 export type { FindFilesOptions } from "./glob";
 export { extractKeyReferences, extractFromSource } from "./key-references";
 export type { KeyReferenceConfig, KeyReferenceResult } from "./key-references";
+export { extractInlineTemplates } from "./inline-templates";
+export type { InlineTemplate, InlineTemplateConfig } from "./inline-templates";

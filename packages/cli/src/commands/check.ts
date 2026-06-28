@@ -18,9 +18,18 @@ import {
   sortIssues,
   summarizeIssues,
 } from "@localeguard/core";
-import type { CheckResult, Issue } from "@localeguard/core";
-import { analyzeProject, extractKeyReferences } from "@localeguard/react-analyzer";
-import { analyzeTemplates, extractTemplateKeyReferences } from "@localeguard/template-analyzer";
+import type { CheckResult, Issue, KeyReference } from "@localeguard/core";
+import {
+  analyzeProject,
+  extractInlineTemplates,
+  extractKeyReferences,
+} from "@localeguard/react-analyzer";
+import {
+  analyzeTemplates,
+  extractTemplateKeyReferences,
+  scanAngularTemplate,
+  scanTemplateString,
+} from "@localeguard/template-analyzer";
 
 import { ConfigError, loadConfig } from "../config";
 import { filterIssuesToChanged, getChangedFiles, GitError } from "../git-changed";
@@ -90,6 +99,21 @@ export function runCheckCommand(args: CheckArgs): number {
       ),
     );
 
+    // Inline Angular templates (`@Component({ template: `…` })`): scan for
+    // hardcoded text and collect their key references.
+    const inlineRefs: KeyReference[] = [];
+    if (config.framework === "ngx-translate" || config.framework === "angular") {
+      for (const tmpl of extractInlineTemplates(
+        { include: config.include, ignore: config.ignore },
+        { rootDir },
+      )) {
+        codeIssues.push(
+          ...scanAngularTemplate(tmpl.source, tmpl.file, config.translationComponents, tmpl.line),
+        );
+        inlineRefs.push(...scanTemplateString(tmpl.source, tmpl.file, tmpl.line).references);
+      }
+    }
+
     // Key-usage: compare literal key references in code against the source locale.
     const reactRefs = extractKeyReferences(
       {
@@ -112,10 +136,14 @@ export function runCheckCommand(args: CheckArgs): number {
       sourceLocale: config.sourceLocale,
     });
     codeIssues.push(
-      ...checkKeyUsage(source.entries, [...reactRefs.references, ...templateRefs.references], {
-        unusedKeys: config.unusedKeys,
-        hasDynamicKeys: reactRefs.hasDynamicKeys || templateRefs.hasDynamicKeys,
-      }),
+      ...checkKeyUsage(
+        source.entries,
+        [...reactRefs.references, ...templateRefs.references, ...inlineRefs],
+        {
+          unusedKeys: config.unusedKeys,
+          hasDynamicKeys: reactRefs.hasDynamicKeys || templateRefs.hasDynamicKeys,
+        },
+      ),
     );
   }
 

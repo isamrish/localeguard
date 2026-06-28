@@ -70,5 +70,5 @@ export { scanTemplate } from "./scanner";
 export type { ScanOptions, TemplateMode } from "./scanner";
 export { scanVueSfc } from "./vue";
 export { scanAngularTemplate } from "./angular";
-export { extractTemplateKeyReferences } from "./key-references";
+export { extractTemplateKeyReferences, scanTemplateString } from "./key-references";
 export type { TemplateKeyConfig, TemplateKeyResult } from "./key-references";

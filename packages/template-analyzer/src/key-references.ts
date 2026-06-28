@@ -66,16 +66,31 @@ export function extractTemplateKeyReferences(
       continue;
     }
     const relPath = path.relative(opts.rootDir, absFile) || absFile;
-    collect(text, relPath, references);
-    if (T_DYNAMIC.test(text)) hasDynamicKeys = true;
+    const result = scanTemplateString(text, relPath);
+    references.push(...result.references);
+    if (result.hasDynamicKeys) hasDynamicKeys = true;
   }
 
   return { references, hasDynamicKeys };
 }
 
-function collect(text: string, file: string, refs: KeyReference[]): void {
+/**
+ * Extract key references from a template string (used for inline Angular
+ * templates, where `startLine` offsets line numbers back into the .ts file).
+ */
+export function scanTemplateString(
+  text: string,
+  file: string,
+  startLine = 1,
+): TemplateKeyResult {
+  const references: KeyReference[] = [];
+  collect(text, file, references, startLine);
+  return { references, hasDynamicKeys: T_DYNAMIC.test(text) };
+}
+
+function collect(text: string, file: string, refs: KeyReference[], startLine: number): void {
   const add = (key: string | undefined, index: number): void => {
-    if (key) refs.push({ key, file, line: lineAt(text, index) });
+    if (key) refs.push({ key, file, line: startLine - 1 + lineAt(text, index) });
   };
   for (const m of text.matchAll(T_CALL)) add(m[2], m.index ?? 0);
   for (const m of text.matchAll(TRANSLATE_PIPE)) add(m[2], m.index ?? 0);

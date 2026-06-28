@@ -10,11 +10,12 @@ export function scanAngularTemplate(
   source: string,
   fileName: string,
   translationComponents?: string[],
+  startLine = 1,
 ): Issue[] {
   return scanTemplate(source, {
     mode: "angular",
     fileName,
-    startLine: 1,
+    startLine,
     translationComponents,
   });
 }
