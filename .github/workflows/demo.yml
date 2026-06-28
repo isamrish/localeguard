@@ -1,0 +1,35 @@
+name: demo
+
+# Renders demo.tape to demo.gif and commits it. Run manually from the Actions
+# tab (or it re-renders when demo.tape changes).
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["demo.tape"]
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: demo.tape
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: regenerate demo gif"
+          file_pattern: demo.gif

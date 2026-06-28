@@ -7,12 +7,16 @@ TypeScript projects. It detects missing translation keys, broken interpolation
 variables, duplicate keys, and invalid locale files — before they merge.
 
 [![CI](https://github.com/isamrish/localeguard/actions/workflows/ci.yml/badge.svg)](https://github.com/isamrish/localeguard/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/localeguard?style=flat-square)](https://www.npmjs.com/package/localeguard)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
-> **Status: `0.1.0` — early release.** Includes locale-file parity,
-> interpolation validation, and source-code analysis for hardcoded JSX text and
-> unlocalized `aria-label`/`alt`/`title`/`placeholder`. A dedicated GitHub Action
-> and framework adapters are on the [roadmap](#roadmap).
+<p align="center">
+  <img src="./demo.gif" alt="LocaleGuard catching localization issues in CI" width="720">
+</p>
+
+> Locale-file parity (JSON/YAML/XLIFF/PO), interpolation validation, hardcoded-text
+> detection (React/Vue/Angular), and key-usage checks — with a GitHub Action,
+> SARIF/Markdown reporters, and a baseline for adopting on existing projects.
 
 ---
 
