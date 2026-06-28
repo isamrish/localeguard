@@ -123,9 +123,28 @@ conservatively — LocaleGuard under-reports rather than risk a false positive.
 | `locales` | yes | Target locales to validate |
 | `localesPath` | yes | Directory holding locale files (relative to the config) |
 | `blockOn` | no | Issue types that fail the check (defaults to all but `extra-key`) |
-| `include`, `translationFunctions`, `translationComponents`, `ignore` | no | Reserved for upcoming source-code analysis |
+| `framework` | no | Preset: `react-i18next` (default behavior) or `react-intl` |
+| `messageFormat` | no | `plain` (default) or `icu-descriptor` (FormatJS message objects) |
+| `include` | no | Source globs for code analysis (default `src/**/*.{ts,tsx}`) |
+| `translationFunctions`, `translationComponents` | no | Names treated as already-localized |
+| `ignore` | no | Globs excluded from code analysis |
 
 Configuration can also live under a `"localeguard"` key in `package.json`.
+
+### Framework adapters
+
+Set `framework` to apply sensible defaults for that stack (you can still override
+any field):
+
+| Framework | Translation components | Message format |
+| --- | --- | --- |
+| `react-i18next` (default) | `Trans` | `plain` — `{ "key": "value" }`, `{{var}}` |
+| `react-intl` | `FormattedMessage`, `Trans` | `icu-descriptor` — `{ "id": { "defaultMessage": "…" } }`, `{var}` |
+
+With `react-intl`, LocaleGuard reads FormatJS message descriptors: the message
+**id** is the key and interpolation is validated against `defaultMessage`, so
+descriptors are never mistaken for nested namespaces. See
+[`examples/react-intl-app`](./examples/react-intl-app).
 
 ### Locale file layouts
 
@@ -216,8 +235,8 @@ free and open source forever.
   TypeScript compiler API.
 - **Phase 3 ✅ (shipped):** PR integration — GitHub Action, Markdown summary,
   SARIF / code-scanning annotations, and changed-files-only mode.
-- **Phase 4:** framework adapters — `react-i18next`, `react-intl`, Next.js,
-  Vue I18n, Angular.
+- **Phase 4 (in progress):** framework adapters — `react-i18next` and
+  `react-intl` ✅. Planned: Next.js, Vue I18n, Angular.
 
 ## Contributing
 

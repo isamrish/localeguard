@@ -8,6 +8,7 @@
  * report can be produced.
  */
 
+import { applyFramework } from "./framework";
 import { compareKeys } from "./key-comparator/compare";
 import { loadLocale } from "./locale-parser/load";
 import { comparePlaceholders } from "./placeholder-validator/placeholder";
@@ -32,11 +33,16 @@ export interface RunCheckOptions {
   rootDir: string;
 }
 
-export function runCheck(config: LocaleGuardConfig, opts: RunCheckOptions): CheckResult {
+export function runCheck(rawConfig: LocaleGuardConfig, opts: RunCheckOptions): CheckResult {
+  const config = applyFramework(rawConfig);
   const issues: Issue[] = [];
   const missingLocales: string[] = [];
 
-  const loadOpts = { rootDir: opts.rootDir, localesPath: config.localesPath };
+  const loadOpts = {
+    rootDir: opts.rootDir,
+    localesPath: config.localesPath,
+    messageFormat: config.messageFormat,
+  };
   const source = loadLocale(config.sourceLocale, loadOpts);
   if (!source.found) {
     throw new LocaleGuardError(

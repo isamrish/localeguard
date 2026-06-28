@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Framework presets** via a `framework` config option. `react-intl` reads
+  FormatJS message descriptors (`{ "id": { "defaultMessage": "…" } }`) — the id
+  is the key and interpolation is validated against `defaultMessage` — and treats
+  `<FormattedMessage>` as a translation component. `react-i18next` remains the
+  default. A `messageFormat` option (`plain` | `icu-descriptor`) is also exposed.
+
 ## [0.2.0] - 2026-06-28
 
 Pull-request integration.

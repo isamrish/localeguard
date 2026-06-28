@@ -1,0 +1,7 @@
+{
+  "framework": "react-intl",
+  "sourceLocale": "en",
+  "locales": ["fr"],
+  "localesPath": "lang",
+  "include": ["src/**/*.{ts,tsx}"]
+}

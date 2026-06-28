@@ -51,7 +51,22 @@ export interface Issue {
   suggestion?: string;
 }
 
+/** Supported framework presets (fill in sensible defaults for other fields). */
+export type Framework = "react-i18next" | "react-intl";
+
+/**
+ * How values in a locale file are interpreted.
+ *   - "plain": leaf strings are messages; nested objects are namespaces.
+ *   - "icu-descriptor": FormatJS/react-intl objects with a string `defaultMessage`
+ *     are messages (the key is the message id; `defaultMessage` is the string).
+ */
+export type MessageFormat = "plain" | "icu-descriptor";
+
 export interface LocaleGuardConfig {
+  /** Optional framework preset; fills defaults for the fields below. */
+  framework?: Framework;
+  /** How locale-file values are interpreted (defaults to "plain"). */
+  messageFormat?: MessageFormat;
   /** Reference locale every other locale is compared against. */
   sourceLocale: string;
   /** Target locales to validate. */

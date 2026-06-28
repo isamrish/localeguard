@@ -15,13 +15,15 @@ import * as path from "node:path";
 import { flatten } from "../flatten";
 import { JsonParseError, parseJson } from "../json/parse";
 import { SEVERITY_BY_TYPE } from "../types";
-import type { Issue, LoadedLocale, LocaleEntry } from "../types";
+import type { Issue, LoadedLocale, LocaleEntry, MessageFormat } from "../types";
 
 export interface LoadOptions {
   /** Absolute project root; reported file paths are relative to this. */
   rootDir: string;
   /** Locales directory, relative to `rootDir`. */
   localesPath: string;
+  /** How locale-file values are interpreted (defaults to "plain"). */
+  messageFormat?: MessageFormat;
 }
 
 interface LocaleFile {
@@ -107,7 +109,10 @@ export function loadLocale(locale: string, opts: LoadOptions): LoadedLocale {
       });
     }
 
-    for (const [flatKey, value] of flatten(parsed.value)) {
+    const flat = flatten(parsed.value, {
+      messageDescriptors: opts.messageFormat === "icu-descriptor",
+    });
+    for (const [flatKey, value] of flat) {
       const fqKey = qualify(namespace, flatKey);
       entries.set(fqKey, {
         value,

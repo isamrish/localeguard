@@ -13,8 +13,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { ISSUE_TYPES } from "@localeguard/core";
-import type { IssueType, LocaleGuardConfig } from "@localeguard/core";
+import { applyFramework, ISSUE_TYPES } from "@localeguard/core";
+import type { Framework, IssueType, LocaleGuardConfig, MessageFormat } from "@localeguard/core";
 
 export class ConfigError extends Error {
   constructor(message: string) {
@@ -30,6 +30,8 @@ export interface LoadedConfig {
 }
 
 const VALID_BLOCK_ON: IssueType[] = ISSUE_TYPES;
+const VALID_FRAMEWORKS: Framework[] = ["react-i18next", "react-intl"];
+const VALID_MESSAGE_FORMATS: MessageFormat[] = ["plain", "icu-descriptor"];
 
 export function loadConfig(opts: { cwd: string; configPath?: string }): LoadedConfig {
   const { cwd } = opts;
@@ -87,8 +89,17 @@ function validate(raw: Record<string, unknown>, source: string): LocaleGuardConf
       fail(`"blockOn" must be an array of: ${VALID_BLOCK_ON.join(", ")}.`);
     }
   }
+  if (raw.framework !== undefined && !VALID_FRAMEWORKS.includes(raw.framework as Framework)) {
+    fail(`"framework" must be one of: ${VALID_FRAMEWORKS.join(", ")}.`);
+  }
+  if (raw.messageFormat !== undefined && !VALID_MESSAGE_FORMATS.includes(raw.messageFormat as MessageFormat)) {
+    fail(`"messageFormat" must be one of: ${VALID_MESSAGE_FORMATS.join(", ")}.`);
+  }
 
-  return {
+  // Fill in framework-preset defaults for any fields the user left unset.
+  return applyFramework({
+    framework: raw.framework as Framework | undefined,
+    messageFormat: raw.messageFormat as MessageFormat | undefined,
     sourceLocale: raw.sourceLocale as string,
     locales: raw.locales as string[],
     localesPath: raw.localesPath as string,
@@ -97,7 +108,7 @@ function validate(raw: Record<string, unknown>, source: string): LocaleGuardConf
     translationComponents: raw.translationComponents as string[] | undefined,
     ignore: raw.ignore as string[] | undefined,
     blockOn: raw.blockOn as IssueType[] | undefined,
-  };
+  });
 }
 
 function readJson(file: string): Record<string, unknown> {

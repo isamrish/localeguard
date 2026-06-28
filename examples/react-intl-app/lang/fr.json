@@ -1,0 +1,4 @@
+{
+  "app.title": { "defaultMessage": "Gestionnaire de clusters" },
+  "app.greeting": { "defaultMessage": "Bienvenue, {nomUtilisateur}" }
+}

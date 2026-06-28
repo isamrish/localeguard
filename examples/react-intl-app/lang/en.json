@@ -1,0 +1,5 @@
+{
+  "app.title": { "defaultMessage": "Cluster Manager", "description": "Application title" },
+  "app.greeting": { "defaultMessage": "Welcome, {userName}", "description": "Header greeting" },
+  "app.items": { "defaultMessage": "{count, plural, one {# item} other {# items}}", "description": "Item count" }
+}
