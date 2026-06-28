@@ -75,6 +75,35 @@ wrapped in a translation call (`{t('...')}`), text inside `<Trans>`, empty `alt`
 and non-text like `100%` are never flagged. Disable code analysis with
 `localeguard check --no-code`.
 
+## How is this different?
+
+Parts of LocaleGuard overlap with existing tools — `eslint-plugin-i18next`
+(`no-literal-string`), `eslint-plugin-formatjs`, and the `i18n-ally` VS Code
+extension. The individual checks are not novel. What LocaleGuard tries to do
+better:
+
+- **One CI gate instead of several tools.** Locale-file parity, interpolation
+  validation, and hardcoded-text detection run from a single `localeguard check`
+  with one config and a CI-safe exit code — rather than stitching together an
+  ESLint rule, an editor extension, and a custom parity script.
+- **Low false positives, by design and by measurement.** Only *literal* values
+  are flagged; anything already dynamic (`{t('...')}`, `<Trans>` children) is
+  left alone. Text inside technical elements (`<code>`, `<pre>`, `<kbd>`,
+  `<samp>`) is skipped, and ICU `plural`/`select` sub-messages are not misread as
+  variables. Against an adversarial fixture — ICU plurals and selects, positional
+  args, reordered interpolation, technical blocks, and mixed dynamic/literal JSX —
+  LocaleGuard reports **zero false positives** while still catching every genuine
+  issue. (`no-literal-string`, by contrast, is well known for needing heavy
+  per-project tuning.) The adversarial cases live in the test suites
+  (`packages/core/test/placeholder.test.ts`,
+  `packages/react-analyzer/test/analyzer.test.ts`).
+- **Framework-agnostic locale checks.** Parity and interpolation validation work
+  on plain JSON locale files regardless of the i18n runtime.
+
+**What it is _not_ (yet):** a full ICU message validator, a key extractor, or a
+replacement for translation-management platforms. Complex nested ICU is handled
+conservatively — LocaleGuard under-reports rather than risk a false positive.
+
 ## Configuration
 
 `localeguard init` creates a `localeguard.config.json`:

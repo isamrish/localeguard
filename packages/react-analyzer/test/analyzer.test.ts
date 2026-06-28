@@ -66,3 +66,26 @@ test("plain .ts files yield nothing", () => {
   const issues = analyzeSource('const s = "just a string";', "util.ts", TRANSLATION_COMPONENTS);
   assert.equal(issues.length, 0);
 });
+
+test("text inside technical elements is not flagged", () => {
+  const code = `const x = (
+    <div>
+      <code>npm install localeguard</code>
+      <pre>const x = 1;</pre>
+      <kbd>Ctrl+C</kbd>
+      <samp>ERR_CONNECTION_REFUSED</samp>
+    </div>
+  );`;
+  assert.equal(analyze(code).length, 0);
+});
+
+test("decorative and non-text content is not flagged", () => {
+  const code = `const x = (
+    <div>
+      <img alt="" />
+      <span>100%</span>
+      <span>&mdash;</span>
+    </div>
+  );`;
+  assert.equal(analyze(code).length, 0);
+});

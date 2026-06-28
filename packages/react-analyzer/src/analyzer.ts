@@ -28,6 +28,18 @@ export const DEFAULT_TRANSLATION_COMPONENTS = ["Trans"];
 /** Accessibility / UX attributes whose values reach end users. */
 const LOCALIZABLE_ATTRS = new Set(["aria-label", "title", "alt", "placeholder"]);
 
+/** Elements whose text is technical, not prose — never flagged. */
+const NON_LOCALIZABLE_ELEMENTS = new Set([
+  "code",
+  "pre",
+  "kbd",
+  "samp",
+  "var",
+  "tt",
+  "script",
+  "style",
+]);
+
 const HAS_LETTER = /\p{L}/u;
 const HTML_ENTITY = /&[a-zA-Z]+;|&#\d+;/g;
 
@@ -100,7 +112,7 @@ function checkJsxText(
   const raw = node.getText(sf);
   const collapsed = raw.replace(/\s+/g, " ").trim();
   if (!isLocalizableText(collapsed)) return;
-  if (isInsideTranslationComponent(node, translationComponents)) return;
+  if (isInsideSkippedElement(node, translationComponents)) return;
 
   const leading = raw.length - raw.replace(/^\s+/, "").length;
   const { line } = sf.getLineAndCharacterOfPosition(node.getStart(sf) + leading);
@@ -149,12 +161,19 @@ function literalValueOf(init: ts.JsxAttribute["initializer"]): string | undefine
   return undefined;
 }
 
-function isInsideTranslationComponent(node: ts.Node, components: Set<string>): boolean {
+/**
+ * True when the node is inside a translation component (e.g. `<Trans>`, whose
+ * text is intentional) or a technical element (e.g. `<code>`, whose text is not
+ * prose). Either way the text should not be flagged.
+ */
+function isInsideSkippedElement(node: ts.Node, components: Set<string>): boolean {
   let current: ts.Node | undefined = node.parent;
   while (current) {
     if (ts.isJsxElement(current)) {
       const name = jsxTagName(current.openingElement.tagName);
-      if (name && components.has(name)) return true;
+      if (name && (components.has(name) || NON_LOCALIZABLE_ELEMENTS.has(name))) {
+        return true;
+      }
     }
     current = current.parent;
   }
