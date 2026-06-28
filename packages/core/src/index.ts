@@ -20,3 +20,7 @@ export type { RunCheckOptions, SummarizeParams } from "./check";
 export { formatText } from "./reporters/text";
 export type { TextReporterOptions } from "./reporters/text";
 export { formatJson } from "./reporters/json";
+export { formatMarkdown } from "./reporters/markdown";
+export type { MarkdownReporterOptions } from "./reporters/markdown";
+export { formatSarif } from "./reporters/sarif";
+export type { SarifReporterOptions } from "./reporters/sarif";

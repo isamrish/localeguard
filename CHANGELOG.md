@@ -6,6 +6,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Markdown reporter** (`--reporter markdown`) for PR comments and GitHub job
+  summaries.
+- **SARIF reporter** (`--reporter sarif`) for GitHub code scanning — findings
+  render as inline annotations on the pull-request diff.
+- **`--output <file>`** flag to write a report to a file (e.g. for SARIF upload).
+- **GitHub Action** (`packages/github-action`): runs the check, writes a job
+  summary, uploads SARIF, and gates the build on blocking issues.
+
 ## [0.1.0] - 2026-06-28
 
 First public release. Packages: `localeguard` (CLI), `@localeguard/core`,

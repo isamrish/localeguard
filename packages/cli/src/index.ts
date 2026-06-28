@@ -6,9 +6,11 @@
 import { parseArgs } from "node:util";
 
 import { runCheckCommand } from "./commands/check";
+import type { Reporter } from "./commands/check";
 import { runInitCommand } from "./commands/init";
 
 const VERSION = "0.1.0";
+const REPORTERS: Reporter[] = ["text", "json", "markdown", "sarif"];
 
 const HELP = `LocaleGuard ${VERSION}
 Localization quality gate for React and TypeScript projects.
@@ -23,7 +25,8 @@ Commands:
 
 Options:
   -c, --config <path>     Path to a config file
-  -r, --reporter <type>   Output format: text (default) or json
+  -r, --reporter <type>   Output format: text (default), json, markdown, sarif
+  -o, --output <file>     Write the report to a file instead of stdout
       --cwd <dir>         Run as if from this directory
       --no-code           Skip source-code analysis (locale files only)
       --no-color          Disable colored output
@@ -45,6 +48,7 @@ export function main(argv: string[]): number {
       options: {
         config: { type: "string", short: "c" },
         reporter: { type: "string", short: "r" },
+        output: { type: "string", short: "o" },
         cwd: { type: "string" },
         color: { type: "boolean" },
         "no-color": { type: "boolean" },
@@ -77,14 +81,24 @@ export function main(argv: string[]): number {
 
   switch (command) {
     case "check": {
-      const reporter = values.reporter === "json" ? "json" : "text";
-      if (values.reporter && reporter !== values.reporter) {
-        process.stderr.write(`localeguard: unknown reporter "${values.reporter}"\n`);
+      const reporter = (values.reporter ?? "text") as Reporter;
+      if (!REPORTERS.includes(reporter)) {
+        process.stderr.write(
+          `localeguard: unknown reporter "${values.reporter}" (expected ${REPORTERS.join(", ")})\n`,
+        );
         return 1;
       }
       const color = resolveColor(values.color, values["no-color"]);
       const code = !values["no-code"];
-      return runCheckCommand({ cwd, configPath: values.config, reporter, color, code });
+      return runCheckCommand({
+        cwd,
+        configPath: values.config,
+        reporter,
+        output: values.output,
+        color,
+        code,
+        toolVersion: VERSION,
+      });
     }
     case "init":
       return runInitCommand({ cwd });

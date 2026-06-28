@@ -104,6 +104,44 @@ test("--no-code skips source analysis", () => {
   assert.equal(JSON.parse(out).stats.byType["hardcoded-string"], 0);
 });
 
+test("--reporter markdown prints a summary", () => {
+  const root = tempProject({
+    "localeguard.config.json": { sourceLocale: "en", locales: ["fr"], localesPath: "locales" },
+    "locales/en.json": { a: "A", b: "B" },
+    "locales/fr.json": { a: "A-fr" },
+  });
+  const { code, out } = captureStdout(() =>
+    main(["check", "--cwd", root, "--reporter", "markdown"]),
+  );
+  assert.equal(code, 1);
+  assert.match(out, /## 🌐 LocaleGuard/);
+  assert.match(out, /Localization check failed/);
+});
+
+test("--reporter sarif --output writes a valid SARIF file", () => {
+  const root = tempProject({
+    "localeguard.config.json": { sourceLocale: "en", locales: ["fr"], localesPath: "locales" },
+    "locales/en.json": { a: "A", b: "B" },
+    "locales/fr.json": { a: "A-fr" },
+  });
+  const code = main(["check", "--cwd", root, "--reporter", "sarif", "--output", "out.sarif"]);
+  assert.equal(code, 1);
+  const sarif = JSON.parse(fs.readFileSync(path.join(root, "out.sarif"), "utf8"));
+  assert.equal(sarif.version, "2.1.0");
+  assert.equal(sarif.runs[0].tool.driver.name, "LocaleGuard");
+  assert.ok(sarif.runs[0].results.length >= 1);
+});
+
+test("unknown reporter is rejected", () => {
+  const root = tempProject({
+    "localeguard.config.json": { sourceLocale: "en", locales: ["fr"], localesPath: "locales" },
+    "locales/en.json": { a: "A" },
+    "locales/fr.json": { a: "A-fr" },
+  });
+  const code = main(["check", "--cwd", root, "--reporter", "xml"]);
+  assert.equal(code, 1);
+});
+
 test("blockOn can make hardcoded text fail the build", () => {
   const root = tempProject({
     "localeguard.config.json": {

@@ -154,22 +154,45 @@ for piping into other tooling.
 
 ## Continuous integration
 
-Until the dedicated action ships, add LocaleGuard to any workflow with two lines:
+### GitHub Action (recommended)
+
+The action fails the job on blocking issues, writes a Markdown summary to the job
+page, and uploads SARIF so findings appear as **inline annotations on the PR diff**:
 
 ```yaml
-name: Localization Check
+name: Localization
 on: pull_request
+permissions:
+  contents: read
+  security-events: write   # for SARIF upload
 jobs:
   localeguard:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm ci
-      - run: npx localeguard check
+      - uses: isamrish/localeguard/packages/github-action@v0.1.0
 ```
+
+See the [action docs](./packages/github-action/README.md) for inputs.
+
+### Plain CLI
+
+Or run it directly in any workflow:
+
+```yaml
+- run: npx localeguard check
+```
+
+### Reporters
+
+`localeguard check --reporter <type>` supports:
+
+| Reporter | Use |
+| --- | --- |
+| `text` | Human-readable terminal output (default) |
+| `json` | Machine-readable (`schemaVersion: 1`) for custom tooling |
+| `markdown` | PR comment / job summary (`--output summary.md`) |
+| `sarif` | GitHub code scanning inline annotations (`--output out.sarif`) |
 
 ## Roadmap
 
@@ -180,8 +203,8 @@ free and open source forever.
 - **Phase 2 ✅ (shipped):** source-code analysis — hardcoded JSX text and
   unlocalized `aria-label`, `title`, `alt`, and `placeholder` attributes via the
   TypeScript compiler API.
-- **Phase 3:** PR integration — dedicated GitHub Action, changed-files-only mode,
-  Markdown PR summaries, SARIF output.
+- **Phase 3 (in progress):** PR integration — GitHub Action ✅, Markdown summary ✅,
+  SARIF / code-scanning annotations ✅. Remaining: changed-files-only mode.
 - **Phase 4:** framework adapters — `react-i18next`, `react-intl`, Next.js,
   Vue I18n, Angular.
 

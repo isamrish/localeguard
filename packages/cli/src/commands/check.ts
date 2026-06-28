@@ -3,8 +3,13 @@
  * results, and report them.
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
+
 import {
   formatJson,
+  formatMarkdown,
+  formatSarif,
   formatText,
   LocaleGuardError,
   runCheck,
@@ -16,13 +21,19 @@ import { analyzeProject } from "@localeguard/react-analyzer";
 
 import { ConfigError, loadConfig } from "../config";
 
+export type Reporter = "text" | "json" | "markdown" | "sarif";
+
 export interface CheckArgs {
   cwd: string;
   configPath?: string;
-  reporter: "text" | "json";
+  reporter: Reporter;
   color: boolean;
   /** Run source-code analysis (hardcoded text). Defaults to true. */
   code: boolean;
+  /** Write the report to this file instead of stdout. */
+  output?: string;
+  /** Tool version, shown in markdown/sarif output. */
+  toolVersion: string;
 }
 
 /** Returns the process exit code. */
@@ -72,11 +83,28 @@ export function runCheckCommand(args: CheckArgs): number {
   });
   const result: CheckResult = { issues, stats, missingLocales: localeResult.missingLocales };
 
-  if (args.reporter === "json") {
-    process.stdout.write(formatJson(result) + "\n");
+  const report = render(result, args);
+
+  if (args.output) {
+    const outPath = path.resolve(args.cwd, args.output);
+    fs.writeFileSync(outPath, report + "\n", "utf8");
+    process.stderr.write(`localeguard: wrote ${args.reporter} report to ${outPath}\n`);
   } else {
-    process.stdout.write(formatText(result, { color: args.color }) + "\n");
+    process.stdout.write(report + "\n");
   }
 
   return result.stats.failed ? 1 : 0;
+}
+
+function render(result: CheckResult, args: CheckArgs): string {
+  switch (args.reporter) {
+    case "json":
+      return formatJson(result);
+    case "markdown":
+      return formatMarkdown(result, { toolVersion: args.toolVersion });
+    case "sarif":
+      return formatSarif(result, { toolVersion: args.toolVersion });
+    default:
+      return formatText(result, { color: args.color });
+  }
 }

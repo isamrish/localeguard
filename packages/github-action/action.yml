@@ -1,0 +1,77 @@
+name: "LocaleGuard"
+description: "Localization quality gate for React and TypeScript — missing keys, broken interpolation, hardcoded text."
+author: "isamrish"
+branding:
+  icon: "globe"
+  color: "orange"
+
+inputs:
+  config:
+    description: "Path to a localeguard config file (optional)."
+    required: false
+    default: ""
+  working-directory:
+    description: "Directory to run LocaleGuard in."
+    required: false
+    default: "."
+  version:
+    description: "Version of the localeguard npm package to run."
+    required: false
+    default: "latest"
+  node-version:
+    description: "Node.js version to set up."
+    required: false
+    default: "20"
+  args:
+    description: "Extra arguments passed to `localeguard check` (e.g. --no-code)."
+    required: false
+    default: ""
+  upload-sarif:
+    description: "Upload SARIF results to GitHub code scanning (inline PR annotations)."
+    required: false
+    default: "true"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Run LocaleGuard (SARIF + job summary)
+      id: check
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        CONFIG_ARG=""
+        if [ -n "${{ inputs.config }}" ]; then CONFIG_ARG="--config ${{ inputs.config }}"; fi
+        SARIF="${RUNNER_TEMP}/localeguard.sarif"
+
+        # SARIF report for code scanning. Capture the exit code but don't fail
+        # the step yet — we still want to upload SARIF and render the summary
+        # even when there are issues.
+        npx --yes localeguard@${{ inputs.version }} check $CONFIG_ARG ${{ inputs.args }} \
+          --reporter sarif --output "$SARIF"
+        CODE=$?
+
+        if [ -f "$SARIF" ]; then
+          echo "sarif=$SARIF" >> "$GITHUB_OUTPUT"
+          echo "sarif-exists=true" >> "$GITHUB_OUTPUT"
+        fi
+
+        # Human-readable summary for the job page.
+        {
+          npx --yes localeguard@${{ inputs.version }} check $CONFIG_ARG ${{ inputs.args }} \
+            --reporter markdown || true
+        } >> "$GITHUB_STEP_SUMMARY"
+
+        # Re-raise the check's exit code so the job fails on blocking issues.
+        exit $CODE
+
+    - name: Upload SARIF to code scanning
+      if: ${{ always() && inputs.upload-sarif == 'true' && steps.check.outputs.sarif-exists == 'true' }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.check.outputs.sarif }}
+        checkout_path: ${{ github.workspace }}
