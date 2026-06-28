@@ -141,6 +141,7 @@ any field):
 | `react-i18next` (default) | `Trans` | `plain` — `{ "key": "value" }`, `{{var}}` |
 | `react-intl` | `FormattedMessage`, `Trans` | `icu-descriptor` — `{ "id": { "defaultMessage": "…" } }`, `{var}` |
 | `next-intl` | _(none)_ | `plain` nested namespaces, ICU `{var}` |
+| `vue-i18n` | `i18n-t` | `plain` nested JSON, `{var}` + `a \| b` plurals |
 
 With `react-intl`, LocaleGuard reads FormatJS message descriptors: the message
 **id** is the key and interpolation is validated against `defaultMessage`, so
@@ -151,6 +152,12 @@ descriptors are never mistaken for nested namespaces. See
 `messages/{locale}.json` with ICU interpolation. See
 [`examples/next-intl-app`](./examples/next-intl-app). **Pages Router
 `next-i18next` is react-i18next under the hood — use the `react-i18next` preset.**
+
+`vue-i18n` covers JSON message files (parity + interpolation, including
+`"a | b | c"` pluralization). See [`examples/vue-i18n-app`](./examples/vue-i18n-app).
+Note: hardcoded-text detection in `.vue` `<template>` blocks is **not** yet
+supported — that needs a Vue SFC parser. Today, source-code analysis is
+React/TypeScript only; the locale-file checks are framework-agnostic.
 
 ### Locale file layouts
 
@@ -242,7 +249,8 @@ free and open source forever.
 - **Phase 3 ✅ (shipped):** PR integration — GitHub Action, Markdown summary,
   SARIF / code-scanning annotations, and changed-files-only mode.
 - **Phase 4 (in progress):** framework adapters — `react-i18next`, `react-intl`,
-  and `next-intl` ✅. Planned: Vue I18n, Angular.
+  `next-intl`, and `vue-i18n` (locale checks) ✅. Planned: Vue `<template>`
+  hardcoded-text analysis, Angular.
 
 ## Contributing
 

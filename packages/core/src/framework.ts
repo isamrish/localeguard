@@ -33,6 +33,15 @@ export const FRAMEWORK_PRESETS: Record<Framework, FrameworkPreset> = {
     translationComponents: [],
     messageFormat: "plain",
   },
+  "vue-i18n": {
+    // Vue I18n: t()/$t()/tc(), <i18n-t> component, plain nested JSON messages,
+    // single-brace {var} interpolation (and "a | b | c" pluralization, which is
+    // plain text to the parity check). NOTE: hardcoded-text detection in .vue
+    // <template> blocks is not yet supported — only locale-file checks apply.
+    translationFunctions: ["t", "$t", "tc", "$tc"],
+    translationComponents: ["i18n-t", "I18nT"],
+    messageFormat: "plain",
+  },
 };
 
 /**

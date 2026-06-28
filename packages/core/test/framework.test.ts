@@ -130,3 +130,38 @@ test("next-intl: nested namespaces flatten and ICU interpolation is validated", 
   assert.equal(result.stats.byType["missing-key"], 1); // HomePage.items
   assert.equal(result.stats.byType["placeholder-mismatch"], 1); // userName -> nomUtilisateur
 });
+
+test("vue-i18n preset uses plain messages", () => {
+  const c = applyFramework({
+    framework: "vue-i18n",
+    sourceLocale: "en",
+    locales: ["fr"],
+    localesPath: "src/locales",
+  });
+  assert.equal(c.messageFormat, "plain");
+  assert.ok(c.translationFunctions?.includes("$t"));
+});
+
+test("vue-i18n: pipe pluralization is plain text; named vars are validated", () => {
+  const root = fixture({
+    "src/locales/en.json": {
+      nav: { home: "Home", settings: "Settings" },
+      greeting: "Hello, {name}",
+      cart: "no items | one item | {count} items",
+    },
+    "src/locales/fr.json": {
+      nav: { home: "Accueil" }, // missing nav.settings
+      greeting: "Bonjour, {nom}", // variable renamed
+      cart: "aucun article | un article | {count} articles", // {count} preserved -> ok
+    },
+  });
+
+  const result = runCheck(
+    { framework: "vue-i18n", sourceLocale: "en", locales: ["fr"], localesPath: "src/locales" },
+    { rootDir: root },
+  );
+
+  assert.equal(result.stats.byType["missing-key"], 1); // nav.settings
+  assert.equal(result.stats.byType["placeholder-mismatch"], 1); // greeting name -> nom
+  // The "a | b | c" plural strings differ in wording but keep {count} -> no false positive.
+});

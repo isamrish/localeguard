@@ -1,0 +1,7 @@
+{
+  "nav": {
+    "home": "Accueil"
+  },
+  "greeting": "Bonjour, {nom}",
+  "cart": "aucun article | un article | {count} articles"
+}

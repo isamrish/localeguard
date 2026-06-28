@@ -1,0 +1,6 @@
+{
+  "framework": "vue-i18n",
+  "sourceLocale": "en",
+  "locales": ["fr"],
+  "localesPath": "src/locales"
+}

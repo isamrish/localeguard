@@ -1,0 +1,8 @@
+{
+  "nav": {
+    "home": "Home",
+    "settings": "Settings"
+  },
+  "greeting": "Hello, {name}",
+  "cart": "no items | one item | {count} items"
+}

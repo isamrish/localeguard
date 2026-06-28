@@ -16,6 +16,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **`next-intl` preset** (App Router): nested-namespace `messages/{locale}.json`
   with ICU interpolation and `useTranslations()`/`t()`. (Pages Router
   `next-i18next` is covered by the `react-i18next` preset.)
+- **`vue-i18n` preset**: JSON message files with `{var}` interpolation and
+  `"a | b | c"` pluralization (locale-file checks). Hardcoded-text detection in
+  `.vue` templates is not yet supported.
 
 ## [0.2.0] - 2026-06-28
 
