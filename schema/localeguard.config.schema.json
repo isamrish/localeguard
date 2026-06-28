@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/isamrish/localeguard/main/schema/localeguard.config.schema.json",
+  "title": "LocaleGuard configuration",
+  "description": "Configuration for the LocaleGuard localization quality gate.",
+  "type": "object",
+  "required": ["sourceLocale", "locales", "localesPath"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "framework": {
+      "description": "Framework preset that fills sensible defaults.",
+      "enum": ["react-i18next", "react-intl", "next-intl", "vue-i18n", "ngx-translate", "angular"]
+    },
+    "messageFormat": {
+      "description": "How JSON locale values are interpreted.",
+      "enum": ["plain", "icu-descriptor"]
+    },
+    "localeFormat": {
+      "description": "On-disk locale file format.",
+      "enum": ["json", "xliff", "yaml", "po"]
+    },
+    "sourceLocale": {
+      "description": "Reference locale every other locale is compared against.",
+      "type": "string",
+      "minLength": 1
+    },
+    "locales": {
+      "description": "Target locales to validate.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "localesPath": {
+      "description": "Directory holding locale files, relative to the config.",
+      "type": "string",
+      "minLength": 1
+    },
+    "include": {
+      "description": "Glob patterns of source files to analyze.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "ignore": {
+      "description": "Glob patterns to exclude from code analysis.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "translationFunctions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "translationComponents": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "blockOn": {
+      "description": "Issue types that fail the check (non-zero exit).",
+      "type": "array",
+      "items": {
+        "enum": [
+          "invalid-json",
+          "missing-key",
+          "extra-key",
+          "duplicate-key",
+          "placeholder-mismatch",
+          "undefined-key",
+          "unused-key",
+          "hardcoded-string",
+          "hardcoded-attribute"
+        ]
+      }
+    },
+    "unusedKeys": {
+      "description": "Report locale keys never referenced in code.",
+      "type": "boolean"
+    },
+    "baseline": {
+      "description": "Path to a baseline file of pre-existing issues to suppress.",
+      "type": "string"
+    }
+  }
+}

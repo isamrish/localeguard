@@ -149,6 +149,8 @@ conservatively — LocaleGuard under-reports rather than risk a false positive.
 | `ignore` | no | Globs excluded from code analysis |
 
 Configuration can also live under a `"localeguard"` key in `package.json`.
+`localeguard init` adds a `$schema` reference so editors give you autocomplete and
+validation for the config.
 
 ### Framework adapters
 

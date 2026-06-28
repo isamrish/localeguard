@@ -6,6 +6,8 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 const TEMPLATE = {
+  $schema:
+    "https://raw.githubusercontent.com/isamrish/localeguard/main/schema/localeguard.config.schema.json",
   sourceLocale: "en",
   locales: ["fr", "tr", "ja", "es"],
   localesPath: "public/locales",
